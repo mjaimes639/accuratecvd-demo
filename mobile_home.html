@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccurateCVD-AI – Mobile App</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary:       #7C3A68;
+    --primary-dark:  #5C2A4F;
+    --primary-mid:   #9B4F82;
+    --primary-light: #EDD8E8;
+    --accent:        #C23B5A;
+    --accent-light:  #FCEAEE;
+    --bg:            #F3EEF6;
+    --card:          #FFFFFF;
+    --text:          #1C1330;
+    --text-muted:    #7A6B8A;
+    --border:        #E8DFF0;
+    --success:       #2A7D5B;
+    --success-bg:    #E6F4EE;
+    --warning:       #C47A1A;
+    --warning-bg:    #FEF3E2;
+    --danger:        #C23B5A;
+    --danger-bg:     #FCEAEE;
+    --shipped:       #0D77E9;
+    --shipped-bg:    #E3F0FB;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Top Navigation Bar ── */
+  .top-nav {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 8px rgba(124,58,104,0.06);
+  }
+
+  .top-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .brand-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .brand-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .brand-tag {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 1px;
+    display: block;
+  }
+
+  .top-nav-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .nav-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: transparent;
+  }
+
+  .nav-pill.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary-light);
+  }
+
+  .nav-pill svg { width: 14px; height: 14px; }
+
+  /* ── Page Layout ── */
+  .page-body {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  /* ── Phone Frame ── */
+  .phone-frame {
+    width: 390px;
+    height: 780px;
+    background: #1A1A2E;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 2px #2C2C3E,
+      0 40px 80px rgba(124,58,104,0.25),
+      0 20px 40px rgba(0,0,0,0.15);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    border-radius: 42px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Notch */
+  .phone-notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 30px;
+    background: #1A1A2E;
+    border-radius: 0 0 20px 20px;
+    z-index: 10;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 44px;
+    padding: 14px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .status-icons {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  /* ── App Content ── */
+  .app-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+    scrollbar-width: none;
+  }
+  .app-content::-webkit-scrollbar { display: none; }
+
+  /* ── Hero Header ── */
+  .hero-header {
+    background: linear-gradient(145deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-mid) 100%);
+    padding: 16px 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-header::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+
+  .hero-header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: 60px;
+    width: 80px;
+    height: 80px;
+    background: rgba(194,59,90,0.25);
+    border-radius: 50%;
+  }
+
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .hero-greeting {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 400;
+    margin-bottom: 2px;
+  }
+
+  .hero-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+  }
+
+  .notif-btn {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    backdrop-filter: blur(4px);
+  }
+
+  .notif-dot {
+    position: absolute;
+    top: 6px;
+    right: 7px;
+    width: 8px;
+    height: 8px;
+    background: #FFB347;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+  }
+
+  /* Kit summary card inside hero */
+  .kit-summary-card {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 14px;
+    padding: 12px 14px;
+    backdrop-filter: blur(4px);
+  }
+
+  .kit-summary-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .kit-count-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .kit-count-badge svg { opacity: 0.85; }
+
+  .view-all-link {
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+  }
+
+  .kit-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+    margin-bottom: 8px;
+  }
+
+  .latest-kit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .latest-kit-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .latest-kit-id {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.3px;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .pill-shipped {
+    background: rgba(26,110,168,0.3);
+    color: #90CDEF;
+    border: 1px solid rgba(144,205,239,0.3);
+  }
+
+  .pill-results {
+    background: rgba(42,125,91,0.3);
+    color: #7ECFAA;
+    border: 1px solid rgba(126,207,170,0.3);
+  }
+
+  .pill-processing {
+    background: rgba(196,122,26,0.3);
+    color: #F5C57A;
+    border: 1px solid rgba(245,197,122,0.3);
+  }
+
+  /* ── Content Sections ── */
+  .content-section {
+    padding: 16px 16px 0;
+  }
+
+  /* Personal ID Card */
+  .personal-id-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    box-shadow: 0 2px 8px rgba(124,58,104,0.06);
+  }
+
+  .pid-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .pid-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .pid-desc {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    max-width: 200px;
+  }
+
+  .copy-btn {
+    width: 30px;
+    height: 30px;
+    background: var(--primary-light);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  /* Quick Actions Grid */
+  .quick-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .action-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(124,58,104,0.05);
+  }
+
+  .action-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(124,58,104,0.12);
+  }
+
+  .action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-purple { background: var(--primary-light); }
+  .icon-crimson { background: var(--accent-light); }
+  .icon-green { background: var(--success-bg); }
+  .icon-amber { background: var(--warning-bg); }
+  .icon-blue { background: var(--shipped-bg); }
+
+  .action-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* Recent Activity */
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(124,58,104,0.05);
+  }
+
+  .activity-item {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+
+  .activity-item:last-child { border-bottom: none; }
+  .activity-item:hover { background: var(--bg); }
+
+  .activity-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-purple { background: var(--primary); }
+  .dot-green  { background: var(--success); }
+  .dot-amber  { background: var(--warning); }
+  .dot-crimson{ background: var(--accent); }
+  .dot-blue   { background: var(--shipped); }
+
+  .activity-info { flex: 1 }
+
+  .activity-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1px;
+  }
+
+  .activity-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .activity-time {
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .unread-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Bottom Navigation ── */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 74px;
+    background: white;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px 10px;
+    z-index: 20;
+    border-radius: 0 0 42px 42px;
+  }
+
+  .nav-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    flex: 1;
+  }
+
+  .nav-tab.active .nav-tab-icon { color: var(--primary); }
+  .nav-tab.active .nav-tab-label { color: var(--primary); font-weight: 600; }
+  .nav-tab .nav-tab-icon { color: var(--text-muted); }
+  .nav-tab .nav-tab-label { color: var(--text-muted); font-size: 10px; font-weight: 500; }
+
+  .nav-tab-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+  .nav-tab-icon svg { width: 20px; height: 20px; }
+
+  /* ── Spacing helpers ── */
+  .mt8  { margin-top: 8px; }
+  .mt12 { margin-top: 12px; }
+  .mt16 { margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+  <a class="top-nav-brand" href="#">
+    <div class="brand-icon">🫀</div>
+    <div>
+      <span class="brand-name">AccurateCVD-AI</span>
+      <span class="brand-tag">Interactive Demo</span>
+    </div>
+  </a>
+  <div class="top-nav-actions">
+    <a href="mobile_home.html" class="nav-pill active">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>
+      Mobile App
+    </a>
+    <a href="web_dashboard.html" class="nav-pill">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      Web Portal
+    </a>
+  </div>
+</nav>
+
+<!-- Page Body -->
+<div class="page-body">
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg width="15" height="11" fill="currentColor" viewBox="0 0 15 11"><rect x="0" y="4" width="3" height="7" rx="1"/><rect x="4" y="2.5" width="3" height="8.5" rx="1"/><rect x="8" y="0.5" width="3" height="10.5" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1" opacity="0.3"/></svg>
+          <svg width="14" height="11" fill="currentColor" viewBox="0 0 24 24"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+          <svg width="24" height="12" viewBox="0 0 24 12"><rect x="0" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/><path d="M21 4.5v3a1.5 1.5 0 000-3z" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <!-- App Content -->
+      <div class="app-content">
+
+        <!-- Hero Header -->
+        <div class="hero-header">
+          <div class="hero-top">
+            <div>
+              <div class="hero-name">Hello, Tom</div>
+            </div>
+            <div class="notif-btn">
+              <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+              <div class="notif-dot"></div>
+            </div>
+          </div>
+
+          <a href="mobile_kits.html" class="kit-summary-card" style="display:block;text-decoration:none;">
+            <div class="kit-summary-top">
+              <div class="kit-count-badge">
+                <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                2 Active Kits
+              </div>
+              <div class="view-all-link">
+                View All
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+            <div class="kit-divider"></div>
+            <div class="latest-kit-row">
+              <div>
+                <div class="latest-kit-label">Latest Kit</div>
+                <div class="latest-kit-id">HCU-2026-M3N4</div>
+              </div>
+              <div class="status-pill pill-shipped">⬤ Shipped</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Personal ID -->
+        <div class="content-section mt12">
+          <div class="personal-id-card">
+            <div>
+              <div class="pid-label">Your Personal ID</div>
+              <div class="pid-value">PID-7F3A</div>
+              <div class="pid-desc">Share this Personal ID with your physician to link your records</div>
+            </div>
+            <div class="copy-btn">
+              <svg width="14" height="14" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="content-section mt16">
+          <div class="section-label">Quick Actions</div>
+          <div class="quick-actions-grid">
+          
+                      <a href="https://www.protexam.com/en-gb/shop/HCU-Heart-Check-Up-p488461842" target="_blank" class="action-card">
+              <div class="action-icon icon-blue">
+                <svg width="20" height="20" fill="none" stroke="var(--shipped)" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              </div>
+              <span class="action-label">Order Kit</span>
+            </a>
+
+            <a href="mobile_register_kit.html" class="action-card">
+              <div class="action-icon icon-purple">
+                <svg width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              </div>
+              <span class="action-label">Register Kit</span>
+            </a>
+
+            <a href="mobile_status.html" class="action-card">
+              <div class="action-icon icon-crimson">
+                <svg width="20" height="20" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <span class="action-label">My Status</span>
+            </a>
+
+            <a href="mobile_results.html" class="action-card">
+              <div class="action-icon icon-green">
+                <svg width="20" height="20" fill="none" stroke="var(--success)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              </div>
+              <span class="action-label">My Results</span>
+            </a>
+
+            <a href="mobile_survey.html" class="action-card">
+              <div class="action-icon icon-amber">
+                <svg width="20" height="20" fill="none" stroke="var(--warning)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+              </div>
+              <span class="action-label">Health Survey</span>
+            </a>
+            
+            <a href="mobile_instructions.html" class="action-card">
+              <div class="action-icon icon-purple">
+                <svg width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <span class="action-label">Instructions &amp; FAQs</span>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="content-section mt16">
+          <div class="section-label">Recent Activity</div>
+          <div class="activity-list">
+
+            <a href="mobile_results.html" class="activity-item">
+              <div class="activity-dot dot-green"></div>
+              <div class="activity-info">
+                <div class="activity-title">Results Released by Physician</div>
+                <div class="activity-sub">CVD-2026-A1B2 · Ready to view</div>
+              </div>
+              <div class="activity-time">2h ago</div>
+              <div class="unread-dot"></div>
+            </a>
+
+            <a href="mobile_status.html" class="activity-item">
+              <div class="activity-dot dot-blue"></div>
+              <div class="activity-info">
+                <div class="activity-title">Kit Shipped</div>
+                <div class="activity-sub">CVD-2026-M3N4 · In transit</div>
+              </div>
+              <div class="activity-time">1d ago</div>
+            </a>
+
+            <a href="mobile_status.html" class="activity-item">
+              <div class="activity-dot dot-green"></div>
+              <div class="activity-info">
+                <div class="activity-title">Sample Received</div>
+                <div class="activity-sub">CVD-2026-A1B2 · Lab confirmed</div>
+              </div>
+              <div class="activity-time">3d ago</div>
+            </a>
+
+            <a href="mobile_survey.html" class="activity-item">
+              <div class="activity-dot dot-amber"></div>
+              <div class="activity-info">
+                <div class="activity-title">Health Survey Due</div>
+                <div class="activity-sub">Please complete before analysis</div>
+              </div>
+              <div class="activity-time">5d ago</div>
+              <div class="unread-dot"></div>
+            </a>
+
+          </div>
+        </div>
+
+        <div style="height:8px;"></div>
+
+      </div><!-- end app-content -->
+
+      <!-- Bottom Navigation -->
+      <div class="bottom-nav">
+        <a href="mobile_home.html" class="nav-tab active">
+          <div class="nav-tab-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+          </div>
+          <span class="nav-tab-label">Home</span>
+        </a>
+        <a href="mobile_status.html" class="nav-tab">
+          <div class="nav-tab-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span class="nav-tab-label">Status</span>
+        </a>
+        <a href="mobile_results.html" class="nav-tab">
+          <div class="nav-tab-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <span class="nav-tab-label">Results</span>
+        </a>
+        <a href="#" class="nav-tab">
+          <div class="nav-tab-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span class="nav-tab-label">Profile</span>
+        </a>
+      </div>
+
+    </div><!-- end phone-screen -->
+  </div><!-- end phone-frame -->
+</div><!-- end page-body -->
+
+</body>
+</html>

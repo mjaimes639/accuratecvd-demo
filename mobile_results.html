@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccurateCVD-AI – Results</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root { --primary:#7C3A68; --primary-dark:#5C2A4F; --primary-mid:#9B4F82; --primary-light:#EDD8E8; --accent:#C23B5A; --accent-light:#FCEAEE; --bg:#F3EEF6; --text:#1C1330; --text-muted:#7A6B8A; --border:#E8DFF0; --success:#2A7D5B; --success-bg:#E6F4EE; --warning:#C47A1A; --warning-bg:#FEF3E2; --danger:#C23B5A; --danger-bg:#FCEAEE; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; display:flex; flex-direction:column; }
+  .top-nav { background:white; border-bottom:1px solid var(--border); padding:0 32px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 1px 8px rgba(124,58,104,0.06); }
+  .top-nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .brand-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .brand-name { font-weight:700; font-size:15px; color:var(--text); letter-spacing:-0.3px; }
+  .brand-tag { font-size:11px; color:var(--text-muted); font-weight:400; margin-top:1px; display:block; }
+  .top-nav-actions { display:flex; gap:8px; }
+  .nav-pill { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer; text-decoration:none; border:1px solid var(--border); color:var(--text-muted); background:transparent; }
+  .nav-pill.active { background:var(--primary-light); color:var(--primary); border-color:var(--primary-light); }
+  .nav-pill svg { width:14px; height:14px; }
+  .page-body { flex:1; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; }
+  .phone-frame { width:390px; height:780px; background:#1A1A2E; border-radius:52px; padding:12px; box-shadow:0 0 0 2px #2C2C3E,0 40px 80px rgba(124,58,104,0.25),0 20px 40px rgba(0,0,0,0.15); position:relative; flex-shrink:0; }
+  .phone-screen { width:100%; height:100%; background:var(--bg); border-radius:42px; overflow:hidden; display:flex; flex-direction:column; position:relative; }
+  .phone-notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:120px; height:30px; background:#1A1A2E; border-radius:0 0 20px 20px; z-index:10; }
+  .status-bar { height:44px; padding:14px 24px 0; display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:600; color:var(--text); flex-shrink:0; }
+  .status-icons { display:flex; gap:5px; align-items:center; }
+  .app-content { flex:1; overflow-y:auto; overflow-x:hidden; padding-bottom:80px; scrollbar-width:none; }
+  .app-content::-webkit-scrollbar { display:none; }
+
+  /* Page Header */
+  .page-header { background:white; padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+  .back-btn { width:32px; height:32px; border-radius:10px; background:var(--bg); display:flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; }
+  .page-title { font-size:17px; font-weight:700; color:var(--text); flex:1; }
+  .page-date { font-size:11px; color:var(--text-muted); }
+
+  .content-pad { padding:14px; display:flex; flex-direction:column; gap:12px; }
+  .card { background:white; border-radius:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(124,58,104,0.05); overflow:hidden; }
+  .card-pad { padding:14px; }
+  .card-title { font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.7px; margin-bottom:10px; }
+
+  /* Risk Assessment Banner */
+  .risk-banner { background:linear-gradient(135deg,#f9f0f5,#fef5f7); border:1.5px solid #f0d4e0; padding:14px; text-align:center; }
+  .risk-label-small { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:4px; }
+  .risk-value { font-size:32px; font-weight:800; letter-spacing:-1px; line-height:1; margin-bottom:4px; }
+  .risk-high { color:var(--danger); }
+  .risk-intermediate { color:var(--warning); }
+  .risk-low { color:var(--success); }
+  .risk-sub { font-size:12px; color:var(--text-muted); }
+
+  /* Gauge */
+  .gauge-wrap { display:flex; flex-direction:column; align-items:center; padding:10px 0 0; }
+  canvas#gaugeChart { max-width:200px; max-height:110px; }
+  .gauge-labels { display:flex; justify-content:space-between; width:200px; margin-top:-8px; }
+  .gauge-label { font-size:9px; color:var(--text-muted); font-weight:500; }
+  .gauge-center { text-align:center; margin-top:4px; }
+  .gauge-score { font-size:26px; font-weight:800; color:var(--danger); }
+  .gauge-score-sub { font-size:10px; color:var(--text-muted); }
+  .confidence-row { display:flex; align-items:center; gap:8px; margin-top:8px; padding:0 14px 12px; }
+  .conf-label { font-size:11px; color:var(--text-muted); }
+  .conf-bar-wrap { flex:1; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+  .conf-bar { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+  .conf-pct { font-size:11px; font-weight:700; color:var(--primary); }
+
+  /* Explained text */
+  .explained-text { font-size:12px; color:var(--text); line-height:1.6; }
+
+  /* Accordion */
+  .accordion-header { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; cursor:pointer; }
+  .accordion-title { font-size:13px; font-weight:600; color:var(--text); }
+  .accordion-body { padding:0 14px 14px; font-size:12px; color:var(--text-muted); line-height:1.6; border-top:1px solid var(--border); padding-top:10px; }
+
+  /* ─── Distribution Plot ─── */
+  .dist-canvas-wrap { padding:8px 8px 0; }
+  canvas#distChart { width:100% !important; max-height:155px; }
+  .dist-legend { display:flex; gap:14px; justify-content:center; padding:6px 0 4px; }
+  .legend-item { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--text-muted); font-weight:500; }
+  .legend-dot { width:10px; height:10px; border-radius:50%; }
+  .dot-healthy { background:#2A7D5B; }
+  .dot-cvd { background:var(--danger); }
+  .dot-score { width:2px; height:12px; background:var(--primary); border-radius:1px; }
+  .dist-score-label { text-align:center; font-size:10px; color:var(--primary); font-weight:600; margin-bottom:4px; }
+
+  /* ─── Peptide Table ─── */
+  .peptide-table { width:100%; border-collapse:collapse; font-size:11px; }
+  .peptide-table th { text-align:left; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); padding:6px 8px; border-bottom:1px solid var(--border); background:#faf8fc; }
+  .peptide-table th:last-child { text-align:right; }
+  .peptide-table td { padding:7px 8px; border-bottom:1px solid #f5f0f8; vertical-align:middle; }
+  .peptide-table tr:last-child td { border-bottom:none; }
+  .peptide-table tr:hover td { background:#faf6fc; }
+  .rank-badge { width:18px; height:18px; border-radius:50%; background:var(--primary-light); color:var(--primary); font-size:9px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+  .peptide-id { color:var(--text-muted); font-size:10px; }
+  .gene-name { font-weight:700; color:var(--text); font-size:11px; }
+  .fc-up   { color:var(--danger); font-weight:700; font-size:11px; text-align:right; }
+  .fc-down { color:#1A6EA8; font-weight:700; font-size:11px; text-align:right; }
+  .heatmap-row { padding:6px 8px 10px; display:flex; align-items:center; gap:8px; }
+  .heatmap-label { font-size:9px; color:var(--text-muted); width:56px; text-align:center; font-weight:500; line-height:1.3; }
+  .heatmap-bar { flex:1; height:8px; border-radius:4px; background:linear-gradient(90deg,#3B82F6 0%,#9333EA 30%,white 50%,#f87171 70%,#C23B5A 100%); }
+
+  /* ─── Pathway Table ─── */
+  .pathway-table { width:100%; border-collapse:collapse; font-size:11px; }
+  .pathway-table th { text-align:left; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); padding:6px 8px; border-bottom:1px solid var(--border); background:#faf8fc; }
+  .pathway-table th.right { text-align:right; }
+  .pathway-table td { padding:7px 8px; border-bottom:1px solid #f5f0f8; vertical-align:middle; }
+  .pathway-table tr:last-child td { border-bottom:none; }
+  .pathway-table tr:hover td { background:#faf6fc; }
+  .pathway-name { font-weight:600; color:var(--text); font-size:11px; }
+  .dev-bar-wrap { width:80px; position:relative; height:10px; }
+  .dev-bar-center { position:absolute; left:50%; top:3px; width:1px; height:4px; background:var(--border); }
+  .dev-bar-fill { position:absolute; top:1px; height:8px; border-radius:2px; }
+  .dev-pos { background:var(--danger); right:50%; }
+  .dev-neg { background:#1A6EA8; left:50%; }
+  .dev-score-pos { color:var(--danger); font-weight:700; font-size:11px; text-align:right; }
+  .dev-score-neg { color:#1A6EA8; font-weight:700; font-size:11px; text-align:right; }
+  .dev-score-zero { color:var(--text-muted); font-weight:500; font-size:11px; text-align:right; }
+  .pept-count { font-size:10px; color:var(--text-muted); text-align:right; }
+  .pathway-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+
+  /* Physician Note */
+  .physician-note { background:#faf0f5; border:1px solid #f0d0e5; border-radius:12px; padding:12px; }
+  .pn-header { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+  .pn-icon { width:20px; height:20px; background:var(--primary-light); border-radius:6px; display:flex; align-items:center; justify-content:center; }
+  .pn-title { font-size:11px; font-weight:700; color:var(--primary); }
+  .pn-text { font-size:11px; color:var(--text-muted); line-height:1.6; font-style:italic; }
+
+  /* Download button */
+  .download-btn { display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg,var(--primary),var(--primary-mid)); color:white; border-radius:14px; padding:13px; font-size:13px; font-weight:700; cursor:pointer; text-decoration:none; box-shadow:0 4px 14px rgba(124,58,104,0.3); }
+
+  .bottom-nav { position:absolute; bottom:0; left:0; right:0; height:74px; background:white; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; padding:0 8px 10px; z-index:20; border-radius:0 0 42px 42px; }
+  .nav-tab { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 16px; cursor:pointer; text-decoration:none; flex:1; }
+  .nav-tab.active .nav-tab-icon { color:var(--primary); }
+  .nav-tab.active .nav-tab-label { color:var(--primary); font-weight:600; }
+  .nav-tab .nav-tab-icon { color:var(--text-muted); }
+  .nav-tab .nav-tab-label { color:var(--text-muted); font-size:10px; font-weight:500; }
+  .nav-tab-icon { width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
+  .nav-tab-icon svg { width:20px; height:20px; }
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <a class="top-nav-brand" href="#"><div class="brand-icon">🫀</div><div><span class="brand-name">AccurateCVD-AI</span><span class="brand-tag">Interactive Demo</span></div></a>
+  <div class="top-nav-actions">
+    <a href="mobile_home.html" class="nav-pill active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>Mobile App</a>
+    <a href="web_dashboard.html" class="nav-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Web Portal</a>
+  </div>
+</nav>
+<div class="page-body">
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="status-bar"><span>9:41</span><div class="status-icons"><svg width="15" height="11" fill="currentColor" viewBox="0 0 15 11"><rect x="0" y="4" width="3" height="7" rx="1"/><rect x="4" y="2.5" width="3" height="8.5" rx="1"/><rect x="8" y="0.5" width="3" height="10.5" rx="1"/></svg><svg width="24" height="12" viewBox="0 0 24 12"><rect x="0" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/><path d="M21 4.5v3a1.5 1.5 0 000-3z" fill="currentColor"/></svg></div></div>
+
+      <div class="app-content">
+        <div class="page-header">
+          <a href="mobile_home.html" class="back-btn"><svg width="16" height="16" fill="none" stroke="var(--text)" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
+          <span class="page-title">Your Results</span>
+          <span class="page-date">Jan 20, 2026</span>
+        </div>
+
+        <div class="content-pad">
+
+          <!-- Physician Approved Banner -->
+          <div style="background:var(--success-bg);border:1.5px solid #b6dfc9;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+            <div style="width:28px;height:28px;background:var(--success);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--success);margin-bottom:1px;">Results Approved &amp; Released</div>
+              <div style="font-size:11px;color:#3a7a5a;line-height:1.4;">Your physician has reviewed and approved these results. </div>
+            </div>
+          </div>
+
+          <!-- 1. Risk Assessment Banner -->
+          <div class="card risk-banner">
+            <div class="risk-label-small">
+              <svg width="12" height="12" fill="none" stroke="var(--danger)" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Risk Assessment
+            </div>
+            <div class="risk-value risk-intermediate">INTERMEDIATE</div>
+            <div class="risk-sub">Intermediate Cardiovascular Risk</div>
+          </div>
+
+          <!-- 2. Risk Gauge + Confidence -->
+          <div class="card">
+            <div class="gauge-wrap">
+              <canvas id="gaugeChart"></canvas>
+              <div class="gauge-labels">
+                <span class="gauge-label">0</span>
+                <span class="gauge-label">50</span>
+                <span class="gauge-label">100</span>
+              </div>
+              <div class="gauge-center">
+                <div class="gauge-score">62</div>
+                <div class="gauge-score-sub">out of 100</div>
+              </div>
+            </div>
+            <div class="confidence-row">
+              <span class="conf-label">Confidence:</span>
+              <div class="conf-bar-wrap"><div class="conf-bar" style="width:87%;"></div></div>
+              <span class="conf-pct">87%</span>
+            </div>
+          </div>
+
+          <!-- 3. Results Explained -->
+          <div class="card card-pad">
+            <div class="card-title">Your Results Explained</div>
+            <div class="explained-text">Your test indicates an <strong>INTERMEDIATE</strong> risk of cardiovascular disease progression. Based on analysis of your urine biomarkers, clinical data (cholesterol, CRP, troponin), and AI model assessment, close monitoring and lifestyle intervention are recommended.</div>
+          </div>
+
+          <!-- 4. Proteom-Score Distribution Plot -->
+          <div class="card">
+            <div class="card-pad" style="padding-bottom:4px;">
+              <div class="card-title">Proteome-Score Distribution</div>
+              <div class="dist-score-label">▲ Your score: 0.82</div>
+            </div>
+            <div class="dist-canvas-wrap">
+              <canvas id="distChart"></canvas>
+            </div>
+            <div class="dist-legend">
+              <div class="legend-item"><div class="legend-dot dot-healthy"></div> Healthy</div>
+              <div class="legend-item"><div class="legend-dot dot-cvd"></div> CAD</div>
+              <div class="legend-item"><div class="legend-dot dot-score"></div> Your Score</div>
+            </div>
+          </div>
+
+          <!-- 5. Peptide Profile Table -->
+          <div class="card card-pad">
+            <div class="card-title">Peptide Profile — Top CVD Contributing Peptides</div>
+            <table class="peptide-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Peptide ID</th>
+                  <th>Protein</th>
+                  <th>FC</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="rank-badge">1</span></td><td><span class="peptide-id">e12955</span></td><td><span class="gene-name">COL1A1</span></td><td class="fc-up">+3.2</td></tr>
+                <tr><td><span class="rank-badge">2</span></td><td><span class="peptide-id">e09821</span></td><td><span class="gene-name">COL3A1</span></td><td class="fc-up">+2.8</td></tr>
+                <tr><td><span class="rank-badge">3</span></td><td><span class="peptide-id">e04417</span></td><td><span class="gene-name">FGA</span></td><td class="fc-up">+2.1</td></tr>
+                <tr><td><span class="rank-badge">4</span></td><td><span class="peptide-id">e07283</span></td><td><span class="gene-name">COL1A1</span></td><td class="fc-up">+1.9</td></tr>
+                <tr><td><span class="rank-badge">5</span></td><td><span class="peptide-id">e11094</span></td><td><span class="gene-name">MMP7</span></td><td class="fc-up">+1.7</td></tr>
+                <tr><td><span class="rank-badge">6</span></td><td><span class="peptide-id">e03556</span></td><td><span class="gene-name">UMOD</span></td><td class="fc-down">–2.4</td></tr>
+                <tr><td><span class="rank-badge">7</span></td><td><span class="peptide-id">e08102</span></td><td><span class="gene-name">COL4A5</span></td><td class="fc-down">–1.6</td></tr>
+                <tr><td><span class="rank-badge">8</span></td><td><span class="peptide-id">e15330</span></td><td><span class="gene-name">CD99</span></td><td class="fc-down">–1.4</td></tr>
+                <tr><td><span class="rank-badge">9</span></td><td><span class="peptide-id">e06841</span></td><td><span class="gene-name">SERPINA1</span></td><td class="fc-up">+1.3</td></tr>
+                <tr><td><span class="rank-badge">10</span></td><td><span class="peptide-id">e02178</span></td><td><span class="gene-name">TTR</span></td><td class="fc-down">–1.1</td></tr>
+              </tbody>
+            </table>
+            <!-- Heatmap legend -->
+            <div class="heatmap-row">
+              <span class="heatmap-label">Down-regulated</span>
+              <div class="heatmap-bar"></div>
+              <span class="heatmap-label">Up-regulated</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-muted);text-align:center;padding-bottom:8px;">Peptide Abundance Heatmap (312 CVD-contributing peptides)</div>
+          </div>
+
+          <!-- 6. Pathway Deviation Table -->
+          <div class="card card-pad">
+            <div class="card-title">Pathway Deviation from CVD-Matched Reference</div>
+            <table class="pathway-table">
+              <thead>
+                <tr>
+                  <th>Pathway</th>
+                  <th>Deviation</th>
+                  <th class="right">Score</th>
+                  <th class="right">N° Pept.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="pathway-dot" style="background:#C23B5A;margin-right:5px;"></span><span class="pathway-name">Collagen degradation</span></td>
+                  <td><div class="dev-bar-wrap"><div class="dev-bar-center"></div><div class="dev-bar-fill dev-pos" style="width:38px;"></div></div></td>
+                  <td class="dev-score-pos">+2.4</td>
+                  <td class="pept-count">87</td>
+                </tr>
+                <tr>
+                  <td><span class="pathway-dot" style="background:#C23B5A;margin-right:5px;"></span><span class="pathway-name">Inflammatory signalling</span></td>
+                  <td><div class="dev-bar-wrap"><div class="dev-bar-center"></div><div class="dev-bar-fill dev-pos" style="width:28px;"></div></div></td>
+                  <td class="dev-score-pos">+1.8</td>
+                  <td class="pept-count">54</td>
+                </tr>
+                <tr>
+                  <td><span class="pathway-dot" style="background:#C47A1A;margin-right:5px;"></span><span class="pathway-name">ECM remodelling</span></td>
+                  <td><div class="dev-bar-wrap"><div class="dev-bar-center"></div><div class="dev-bar-fill dev-pos" style="width:18px;"></div></div></td>
+                  <td class="dev-score-pos">+1.1</td>
+                  <td class="pept-count">42</td>
+                </tr>
+                <tr>
+                  <td><span class="pathway-dot" style="background:#C47A1A;margin-right:5px;"></span><span class="pathway-name">Metabolic regulation</span></td>
+                  <td><div class="dev-bar-wrap"><div class="dev-bar-center"></div><div class="dev-bar-fill dev-pos" style="width:10px;"></div></div></td>
+                  <td class="dev-score-pos">+0.7</td>
+                  <td class="pept-count">31</td>
+                </tr>
+                <tr>
+                  <td><span class="pathway-dot" style="background:#9B9BB0;margin-right:5px;"></span><span class="pathway-name">Oxidative stress</span></td>
+                  <td><div class="dev-bar-wrap"><div class="dev-bar-center"></div></div></td>
+                  <td class="dev-score-zero">0.0</td>
+                  <td class="pept-count">18</td>
+                </tr>
+                <tr>
+                  <td><span class="pathway-dot" style="background:#2A7D5B;margin-right:5px;"></span><span class="pathway-name">Vascular homeostasis</span></td>
+                  <td><div class="dev-bar-wrap"><div class="dev-bar-center"></div><div class="dev-bar-fill dev-neg" style="width:12px;"></div></div></td>
+                  <td class="dev-score-neg">–0.8</td>
+                  <td class="pept-count">24</td>
+                </tr>
+                <tr>
+                  <td><span class="pathway-dot" style="background:#2A7D5B;margin-right:5px;"></span><span class="pathway-name">Tissue repair</span></td>
+                  <td><div class="dev-bar-wrap"><div class="dev-bar-center"></div><div class="dev-bar-fill dev-neg" style="width:20px;"></div></div></td>
+                  <td class="dev-score-neg">–1.3</td>
+                  <td class="pept-count">38</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 7. What does this mean? (accordion) -->
+          <div class="card">
+            <div class="accordion-header">
+              <span class="accordion-title">What does this mean?</span>
+              <svg width="16" height="16" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="accordion-body">
+              An intermediate risk score means your cardiovascular biomarker profile shows meaningful changes from a healthy reference population. Your physician will use this result alongside your clinical data to determine the most appropriate monitoring or intervention plan.
+            </div>
+          </div>
+
+          <!-- 8. Physician's Note -->
+          <div class="card card-pad">
+            <div class="pn-header">
+              <div class="pn-icon"><svg width="10" height="10" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+              <span class="pn-title">Physician's Note</span>
+            </div>
+            <div class="pn-text">"Proteomic analysis consistent with intermediate CVD risk. Elevated collagen degradation and inflammatory markers noted. Recommend lifestyle modification, statin therapy review, and follow-up CE-MS in 6 months."</div>
+          </div>
+
+          <!-- 9. Download -->
+          <a href="#" class="download-btn">
+            <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF Report
+          </a>
+
+          <!-- 10. Discuss with Doctor -->
+          <div style="background:var(--primary-light);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;">
+            <div style="width:28px;height:28px;border-radius:8px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:3px;">Discuss with Your Cardiologist</div>
+              <div style="font-size:11px;color:var(--primary-dark);line-height:1.5;">We recommend sharing these results with your healthcare provider for a comprehensive discussion about your care plan.</div>
+            </div>
+          </div>
+
+          <div style="height:4px;"></div>
+
+        </div><!-- content-pad -->
+      </div><!-- app-content -->
+
+      <div class="bottom-nav">
+        <a href="mobile_home.html" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div><span class="nav-tab-label">Home</span></a>
+        <a href="mobile_status.html" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="nav-tab-label">Status</span></a>
+        <a href="mobile_results.html" class="nav-tab active"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-tab-label">Results</span></a>
+        <a href="#" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-tab-label">Profile</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Helper: Gaussian curve
+function gaussian(x, mu, sigma) {
+  return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+}
+
+// ── Gauge Chart ──
+(function() {
+  const ctx = document.getElementById('gaugeChart').getContext('2d');
+  const score = 62;
+  const pct = score / 100;
+  const filled = pct * 0.75; // 0.75 of semicircle
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [filled, 0.75 - filled, 0.25],
+        backgroundColor: ['#C23B5A', '#E8DFF0', 'transparent'],
+        borderWidth: 0,
+        circumference: 270,
+        rotation: 225,
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '72%',
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      animation: { duration: 800 }
+    }
+  });
+})();
+
+// ── Distribution Chart ──
+(function() {
+  const ctx = document.getElementById('distChart').getContext('2d');
+  const xs = [];
+  for (let x = -6.5; x <= 3.5; x += 0.1) xs.push(Math.round(x * 10) / 10);
+
+  const muHealthy = -1.5, sigmaHealthy = 0.9;
+  const muCVD = 0.5, sigmaCVD = 1.4, scaleCVD = 0.18;
+  const actualScore = 0.82;
+
+  const healthyData = xs.map(x => gaussian(x, muHealthy, sigmaHealthy));
+  const cvdData = xs.map(x => scaleCVD * gaussian(x, muCVD, sigmaCVD));
+
+  // Plugin to draw a vertical score line
+  const scoreLinePlugin = {
+    id: 'scoreLinePlugin',
+    afterDatasetsDraw(chart) {
+      const { ctx, chartArea } = chart;
+      const { left, right, top, bottom } = chartArea;
+
+      // Because xs is uniformly spaced, we can convert the score to a pixel
+      const xMin = xs[0];
+      const xMax = xs[xs.length - 1];
+      const xPixel = left + ((actualScore - xMin) / (xMax - xMin)) * (right - left);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.setLineDash([6, 4]);   // dashed line like your reference
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#7C3A68'; // blue
+      ctx.moveTo(xPixel, top);
+      ctx.lineTo(xPixel, bottom);
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: xs,
+      datasets: [
+        {
+          label: 'Healthy',
+          data: healthyData,
+          borderColor: '#2A7D5B',
+          backgroundColor: 'rgba(42,125,91,0.12)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+        },
+        {
+          label: 'CAD',
+          data: cvdData,
+          borderColor: '#C23B5A',
+          backgroundColor: 'rgba(194,59,90,0.10)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      },
+      scales: {
+        x: {
+          ticks: {
+            maxTicksLimit: 8,
+            font: { size: 8, family: 'DM Sans' },
+            color: '#7A6B8A',
+            callback: function(val) {
+              const v = this.getLabelForValue(val);
+              return parseFloat(v) % 1 === 0 ? v : '';
+            }
+          },
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          title: {
+            display: true,
+            text: 'Proteome Score',
+            font: { size: 9, family: 'DM Sans' },
+            color: '#7A6B8A'
+          }
+        },
+        y: {
+          ticks: { font: { size: 8 }, color: '#7A6B8A', maxTicksLimit: 5 },
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          title: {
+            display: true,
+            text: 'Frequency',
+            font: { size: 9, family: 'DM Sans' },
+            color: '#7A6B8A'
+          }
+        }
+      },
+      animation: { duration: 800 }
+    },
+    plugins: [scoreLinePlugin]
+  });
+})();
+</script>
+</body>
+</html>

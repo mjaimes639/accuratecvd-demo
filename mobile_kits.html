@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccurateCVD-AI – My Kits</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary:       #7C3A68;
+    --primary-dark:  #5C2A4F;
+    --primary-mid:   #9B4F82;
+    --primary-light: #EDD8E8;
+    --accent:        #C23B5A;
+    --accent-light:  #FCEAEE;
+    --bg:            #F3EEF6;
+    --card:          #FFFFFF;
+    --text:          #1C1330;
+    --text-muted:    #7A6B8A;
+    --border:        #E8DFF0;
+    --success:       #2A7D5B;
+    --success-bg:    #E6F4EE;
+    --warning:       #C47A1A;
+    --warning-bg:    #FEF3E2;
+    --danger:        #C23B5A;
+    --danger-bg:     #FCEAEE;
+    --shipped:       #1A6EA8;
+    --shipped-bg:    #E3F0FB;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; display:flex; flex-direction:column; }
+
+  .top-nav { background:white; border-bottom:1px solid var(--border); padding:0 32px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 1px 8px rgba(124,58,104,0.06); }
+  .top-nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .brand-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .brand-name { font-weight:700; font-size:15px; color:var(--text); letter-spacing:-0.3px; }
+  .brand-tag { font-size:11px; color:var(--text-muted); font-weight:400; margin-top:1px; display:block; }
+  .top-nav-actions { display:flex; gap:8px; }
+  .nav-pill { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer; text-decoration:none; transition:all 0.2s; border:1px solid var(--border); color:var(--text-muted); background:transparent; }
+  .nav-pill.active { background:var(--primary-light); color:var(--primary); border-color:var(--primary-light); }
+  .nav-pill svg { width:14px; height:14px; }
+
+  .page-body { flex:1; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; }
+
+  .phone-frame { width:390px; height:780px; background:#1A1A2E; border-radius:52px; padding:12px; box-shadow:0 0 0 2px #2C2C3E, 0 40px 80px rgba(124,58,104,0.25), 0 20px 40px rgba(0,0,0,0.15); position:relative; flex-shrink:0; }
+  .phone-screen { width:100%; height:100%; background:var(--bg); border-radius:42px; overflow:hidden; display:flex; flex-direction:column; position:relative; }
+  .phone-notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:120px; height:30px; background:#1A1A2E; border-radius:0 0 20px 20px; z-index:10; }
+
+  .status-bar { height:44px; padding:14px 24px 0; display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:600; color:var(--text); flex-shrink:0; }
+  .status-icons { display:flex; gap:5px; align-items:center; }
+
+  .app-content { flex:1; overflow-y:auto; overflow-x:hidden; padding-bottom:80px; scrollbar-width:none; }
+  .app-content::-webkit-scrollbar { display:none; }
+
+  /* Page Header */
+  .page-header { background:white; padding:16px 20px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; }
+  .back-btn { width:32px; height:32px; border-radius:10px; background:var(--bg); display:flex; align-items:center; justify-content:center; cursor:pointer; text-decoration:none; }
+  .page-title { font-size:17px; font-weight:700; color:var(--text); flex:1; }
+  .kit-count-tag { background:var(--primary-light); color:var(--primary); font-size:11px; font-weight:700; padding:3px 8px; border-radius:10px; }
+
+  /* Kit Cards */
+  .kits-list { padding:16px; display:flex; flex-direction:column; gap:12px; }
+
+  .kit-card { background:white; border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 2px 8px rgba(124,58,104,0.06); }
+
+  .kit-card-header { padding:12px 14px 10px; display:flex; align-items:flex-start; gap:10px; }
+  .kit-icon-wrap { width:34px; height:34px; border-radius:10px; background:var(--primary-light); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .kit-header-info { flex:1; }
+  .kit-id-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+  .kit-id-text { font-size:14px; font-weight:700; color:var(--text); letter-spacing:0.3px; }
+  .kit-date { font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:4px; }
+
+  .kit-card-divider { height:1px; background:var(--border); margin:0 14px; }
+  .kit-card-body { padding:10px 14px 0; }
+  .kit-status-text { font-size:12px; color:var(--text-muted); margin-bottom:10px; }
+
+  .kit-action-btn { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; text-decoration:none; transition:all 0.15s; }
+  .btn-results { background:var(--success-bg); color:var(--success); margin-bottom:12px; }
+  .btn-track   { background:var(--bg); color:var(--text); border:1px solid var(--border); margin-bottom:12px; }
+  .btn-results:hover { background:#d0ecde; }
+  .btn-track:hover   { background:#ebe4f0; }
+
+  /* Status pills */
+  .status-pill { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:600; }
+  .pill-shipped    { background:var(--shipped-bg); color:var(--shipped); }
+  .pill-results    { background:var(--success-bg); color:var(--success); }
+  .pill-processing { background:var(--warning-bg); color:var(--warning); }
+  .pill-received   { background:#E8F4FB; color:#1565A8; }
+
+  /* Register CTA */
+  .register-cta { margin:4px 16px 0; background:linear-gradient(135deg,var(--primary),var(--primary-mid)); border-radius:16px; padding:14px 16px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:14px; font-weight:700; color:white; cursor:pointer; text-decoration:none; box-shadow:0 4px 16px rgba(124,58,104,0.3); transition:all 0.2s; }
+  .register-cta:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(124,58,104,0.4); }
+
+  /* Bottom Nav */
+  .bottom-nav { position:absolute; bottom:0; left:0; right:0; height:74px; background:white; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; padding:0 8px 10px; z-index:20; border-radius:0 0 42px 42px; }
+  .nav-tab { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 16px; border-radius:12px; cursor:pointer; text-decoration:none; transition:all 0.2s; flex:1; }
+  .nav-tab.active .nav-tab-icon { color:var(--primary); }
+  .nav-tab.active .nav-tab-label { color:var(--primary); font-weight:600; }
+  .nav-tab .nav-tab-icon { color:var(--text-muted); }
+  .nav-tab .nav-tab-label { color:var(--text-muted); font-size:10px; font-weight:500; }
+  .nav-tab-icon { width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
+  .nav-tab-icon svg { width:20px; height:20px; }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="top-nav-brand" href="#">
+    <div class="brand-icon">🫀</div>
+    <div>
+      <span class="brand-name">AccurateCVD-AI</span>
+      <span class="brand-tag">Interactive Demo</span>
+    </div>
+  </a>
+  <div class="top-nav-actions">
+    <a href="mobile_home.html" class="nav-pill active">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>
+      Mobile App
+    </a>
+    <a href="web_dashboard.html" class="nav-pill">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      Web Portal
+    </a>
+  </div>
+</nav>
+
+<div class="page-body">
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg width="15" height="11" fill="currentColor" viewBox="0 0 15 11"><rect x="0" y="4" width="3" height="7" rx="1"/><rect x="4" y="2.5" width="3" height="8.5" rx="1"/><rect x="8" y="0.5" width="3" height="10.5" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1" opacity="0.3"/></svg>
+          <svg width="24" height="12" viewBox="0 0 24 12"><rect x="0" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/><path d="M21 4.5v3a1.5 1.5 0 000-3z" fill="currentColor"/></svg>
+        </div>
+      </div>
+
+      <div class="app-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <a href="mobile_home.html" class="back-btn">
+            <svg width="16" height="16" fill="none" stroke="var(--text)" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          </a>
+          <span class="page-title">My Kits</span>
+          <span class="kit-count-tag">2 kits</span>
+        </div>
+
+        <div class="kits-list">
+
+          <!-- Kit 1 — Results Available -->
+          <div class="kit-card">
+            <div class="kit-card-header">
+              <div class="kit-icon-wrap">
+                <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div class="kit-header-info">
+                <div class="kit-id-row">
+                  <span class="kit-id-text">HCU-2026-A1B2</span>
+                  <span class="status-pill pill-results">⬤ Physician Approved</span>
+                </div>
+                <div class="kit-date">
+                  <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Ordered Jan 6, 2026
+                </div>
+              </div>
+            </div>
+            <div class="kit-card-divider"></div>
+            <div class="kit-card-body">
+              <div class="kit-status-text">Results ready</div>
+              <a href="mobile_results.html" class="kit-action-btn btn-results">
+                <span>View Results</span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Kit 2 — Shipped -->
+          <div class="kit-card">
+            <div class="kit-card-header">
+              <div class="kit-icon-wrap">
+                <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div class="kit-header-info">
+                <div class="kit-id-row">
+                  <span class="kit-id-text">HCU-2026-M3N4</span>
+                  <span class="status-pill pill-shipped">⬤ Shipped</span>
+                </div>
+                <div class="kit-date">
+                  <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Ordered Feb 26, 2026
+                </div>
+              </div>
+            </div>
+            <div class="kit-card-divider"></div>
+            <div class="kit-card-body">
+              <div class="kit-status-text">Awaiting registration</div>
+              <a href="mobile_status.html" class="kit-action-btn btn-track">
+                <span>Track Status</span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+              </a>
+            </div>
+          </div>
+
+        </div><!-- kits-list -->
+
+        <!-- Register CTA -->
+        <a href="mobile_register_kit.html" class="register-cta">
+          <svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Register New Kit
+        </a>
+
+      </div><!-- app-content -->
+
+      <div class="bottom-nav">
+        <a href="mobile_home.html" class="nav-tab">
+          <div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
+          <span class="nav-tab-label">Home</span>
+        </a>
+        <a href="mobile_status.html" class="nav-tab">
+          <div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <span class="nav-tab-label">Status</span>
+        </a>
+        <a href="mobile_results.html" class="nav-tab">
+          <div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+          <span class="nav-tab-label">Results</span>
+        </a>
+        <a href="#" class="nav-tab">
+          <div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <span class="nav-tab-label">Profile</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

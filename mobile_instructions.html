@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccurateCVD-AI – Instructions & FAQs</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#7C3A68; --primary-dark:#5C2A4F; --primary-mid:#9B4F82; --primary-light:#EDD8E8; --accent:#C23B5A; --accent-light:#FCEAEE; --bg:#F3EEF6; --text:#1C1330; --text-muted:#7A6B8A; --border:#E8DFF0; --success:#2A7D5B; --success-bg:#E6F4EE; --warning:#C47A1A; --warning-bg:#FEF3E2; --shipped:#1A6EA8; --shipped-bg:#E3F0FB; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); min-height:100vh; display:flex; flex-direction:column; }
+  .top-nav { background:white; border-bottom:1px solid var(--border); padding:0 32px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 1px 8px rgba(124,58,104,0.06); }
+  .top-nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .brand-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .brand-name { font-weight:700; font-size:15px; color:var(--text); }
+  .brand-tag { font-size:11px; color:var(--text-muted); font-weight:400; display:block; }
+  .top-nav-actions { display:flex; gap:8px; }
+  .nav-pill { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer; text-decoration:none; border:1px solid var(--border); color:var(--text-muted); background:transparent; }
+  .nav-pill.active { background:var(--primary-light); color:var(--primary); border-color:var(--primary-light); }
+  .nav-pill svg { width:14px; height:14px; }
+  .page-body { flex:1; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; }
+  .phone-frame { width:390px; height:780px; background:#1A1A2E; border-radius:52px; padding:12px; box-shadow:0 0 0 2px #2C2C3E,0 40px 80px rgba(124,58,104,0.25),0 20px 40px rgba(0,0,0,0.15); position:relative; flex-shrink:0; }
+  .phone-screen { width:100%; height:100%; background:var(--bg); border-radius:42px; overflow:hidden; display:flex; flex-direction:column; position:relative; }
+  .phone-notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:120px; height:30px; background:#1A1A2E; border-radius:0 0 20px 20px; z-index:10; }
+  .status-bar { height:44px; padding:14px 24px 0; display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:600; color:var(--text); flex-shrink:0; }
+  .status-icons { display:flex; gap:5px; align-items:center; }
+  .app-content { flex:1; overflow-y:auto; padding-bottom:80px; scrollbar-width:none; }
+  .app-content::-webkit-scrollbar { display:none; }
+
+  /* Header */
+  .page-header { background:white; padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+  .back-btn { width:32px; height:32px; border-radius:10px; background:var(--bg); display:flex; align-items:center; justify-content:center; text-decoration:none; }
+  .page-title { font-size:17px; font-weight:700; color:var(--text); flex:1; }
+
+  .content-pad { padding:14px; display:flex; flex-direction:column; gap:12px; }
+
+  /* Tab Bar */
+  .tab-bar { display:flex; background:white; border:1px solid var(--border); border-radius:12px; padding:3px; gap:2px; }
+  .tab-btn { flex:1; padding:7px; border-radius:9px; font-size:12px; font-weight:600; text-align:center; cursor:pointer; transition:all 0.2s; color:var(--text-muted); }
+  .tab-btn.active { background:var(--primary); color:white; }
+
+  /* Steps card */
+  .steps-card { background:white; border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 2px 8px rgba(124,58,104,0.05); }
+  .steps-header { padding:12px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .steps-title { font-size:13px; font-weight:700; color:var(--text); }
+  .steps-count { font-size:11px; color:var(--text-muted); background:var(--bg); padding:2px 8px; border-radius:10px; }
+
+  .step-item { display:flex; gap:12px; padding:12px 14px; border-bottom:1px solid #f5f0f8; align-items:flex-start; }
+  .step-item:last-child { border-bottom:none; }
+  .step-num { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-mid)); color:white; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+  .step-content-title { font-size:12px; font-weight:700; color:var(--text); margin-bottom:2px; }
+  .step-content-desc { font-size:11px; color:var(--text-muted); line-height:1.5; }
+  .step-time-badge { display:inline-flex; align-items:center; gap:4px; background:var(--warning-bg); color:var(--warning); font-size:10px; font-weight:600; padding:2px 7px; border-radius:8px; margin-top:4px; }
+
+  /* Download CTA */
+  .download-cta { background:linear-gradient(135deg,var(--primary-dark),var(--primary)); border-radius:16px; padding:14px 16px; display:flex; gap:12px; align-items:center; cursor:pointer; text-decoration:none; box-shadow:0 4px 16px rgba(124,58,104,0.3); transition:all 0.2s; }
+  .download-cta:hover { transform:translateY(-1px); }
+  .dl-icon { width:40px; height:40px; background:rgba(255,255,255,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .dl-title { font-size:13px; font-weight:700; color:white; margin-bottom:2px; }
+  .dl-sub { font-size:11px; color:rgba(255,255,255,0.7); }
+
+  /* External link CTA */
+  .external-cta { background:white; border:1.5px solid var(--border); border-radius:16px; padding:14px 16px; display:flex; gap:12px; align-items:center; cursor:pointer; text-decoration:none; box-shadow:0 2px 8px rgba(124,58,104,0.05); transition:all 0.2s; }
+  .external-cta:hover { border-color:var(--primary); }
+  .ext-icon { width:40px; height:40px; background:var(--shipped-bg); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ext-title { font-size:13px; font-weight:700; color:var(--text); margin-bottom:2px; }
+  .ext-sub { font-size:11px; color:var(--text-muted); }
+  .ext-arrow { margin-left:auto; flex-shrink:0; }
+
+  /* FAQ Accordion */
+  .faq-card { background:white; border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 2px 8px rgba(124,58,104,0.05); }
+  .faq-header-row { padding:12px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .faq-header-title { font-size:13px; font-weight:700; color:var(--text); }
+  .faq-item { border-bottom:1px solid #f5f0f8; }
+  .faq-item:last-child { border-bottom:none; }
+  .faq-q { padding:11px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; gap:10px; }
+  .faq-q-text { font-size:12px; font-weight:600; color:var(--text); line-height:1.4; }
+  .faq-chevron { flex-shrink:0; transition:transform 0.2s; color:var(--text-muted); }
+  .faq-item.open .faq-chevron { transform:rotate(180deg); }
+  .faq-a { display:none; padding:0 14px 11px; font-size:11px; color:var(--text-muted); line-height:1.6; }
+  .faq-item.open .faq-a { display:block; }
+
+  /* Section labels */
+  .section-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); }
+
+  /* Tab panels */
+  .tab-panel { display:none; }
+  .tab-panel.active { display:flex; flex-direction:column; gap:12px; }
+
+  .bottom-nav { position:absolute; bottom:0; left:0; right:0; height:74px; background:white; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; padding:0 8px 10px; z-index:20; border-radius:0 0 42px 42px; }
+  .nav-tab { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 16px; cursor:pointer; text-decoration:none; flex:1; }
+  .nav-tab.active .nav-tab-icon { color:var(--primary); }
+  .nav-tab.active .nav-tab-label { color:var(--primary); font-weight:600; }
+  .nav-tab .nav-tab-icon { color:var(--text-muted); }
+  .nav-tab .nav-tab-label { color:var(--text-muted); font-size:10px; font-weight:500; }
+  .nav-tab-icon { width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
+  .nav-tab-icon svg { width:20px; height:20px; }
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <a class="top-nav-brand" href="#"><div class="brand-icon">🫀</div><div><span class="brand-name">AccurateCVD-AI</span><span class="brand-tag">Interactive Demo</span></div></a>
+  <div class="top-nav-actions">
+    <a href="mobile_home.html" class="nav-pill active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>Mobile App</a>
+    <a href="web_dashboard.html" class="nav-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Web Portal</a>
+  </div>
+</nav>
+
+<div class="page-body">
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="status-bar"><span>9:41</span><div class="status-icons"><svg width="15" height="11" fill="currentColor" viewBox="0 0 15 11"><rect x="0" y="4" width="3" height="7" rx="1"/><rect x="4" y="2.5" width="3" height="8.5" rx="1"/><rect x="8" y="0.5" width="3" height="10.5" rx="1"/></svg><svg width="24" height="12" viewBox="0 0 24 12"><rect x="0" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/><path d="M21 4.5v3a1.5 1.5 0 000-3z" fill="currentColor"/></svg></div></div>
+
+      <div class="app-content">
+        <div class="page-header">
+          <a href="mobile_home.html" class="back-btn"><svg width="16" height="16" fill="none" stroke="var(--text)" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
+          <span class="page-title">Instructions &amp; FAQs</span>
+        </div>
+
+        <div class="content-pad">
+
+          <!-- Tab switcher -->
+          <div class="tab-bar">
+            <div class="tab-btn active" onclick="switchTab('instructions', this)">Instructions</div>
+            <div class="tab-btn" onclick="switchTab('faqs', this)">FAQs</div>
+          </div>
+
+          <!-- ── INSTRUCTIONS TAB ── -->
+          <div id="tab-instructions" class="tab-panel active">
+
+            <!-- Step-by-step -->
+            <div class="steps-card">
+              <div class="steps-header">
+                <span class="steps-title">Instructions for Shipping the Sample</span>
+                <span class="steps-count">7 steps</span>
+              </div>
+              
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div>
+                  <div class="step-content-title">The protexam test arrives</div>
+                  <div class="step-content-desc">Everything you need for sampling is included in the package. From the instructions for use to the return box. Nothing else is required.</div>
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div>
+                  <div class="step-content-title">Collect the sample according to the instructions provided in the kit</div>
+                  <div class="step-content-desc">Collect the sample from your second urination of the day for most accurate proteomic results.</div>
+                  <div class="step-time-badge">Midstread urine sample</div>
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <div>
+                  <div class="step-content-title">Pack in the return box</div>
+                  <div class="step-content-desc">This is a human sample. Therefore, packaging and shipping must be carried out as described in the instructions (urine, urine tube, transport container, return box)(based on UN3373 and P650). Please use only components of the test kit!</div>
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-num">4</div>
+                <div>
+                  <div class="step-content-title">Ship within 24 hours</div>
+                  <div class="step-content-desc">Arrange for collection by the express service immediately, following the enclosed instructions for express return shipping.</div>
+                  <div class="step-time-badge">⏰ Within 24h of collection</div>
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-num">5</div>
+                <div>
+                  <div class="step-content-title">Deliver the sealed return box</div>
+                  <div class="step-content-desc">When the express service arrives, hand them the sealed return box.</div>
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-num">6</div>
+                <div>
+                  <div class="step-content-title">Place in biohazard bag</div>
+                  <div class="step-content-desc">If the sample collection fails, notify the express service again. Rest assured, the urine tube contains a stabilizer that will stabilize the sample for up to 48 hours at room temperature.</div>
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-num">7</div>
+                <div>
+                  <div class="step-content-title">Debriefing of the result</div>
+                  <div class="step-content-desc">With the result of protexam, your doctor can plan in detail with you what your future path to a healthy life will look like.</div>
+                </div>
+              </div>
+
+            </div><!-- steps-card -->
+
+            <!-- Download PDF CTA -->
+            <a href="#" class="download-cta" onclick="alert('In the real app, this would download the PDF instructions.')">
+              <div class="dl-icon">
+                <svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+              <div>
+                <div class="dl-title">Download PDF Instructions</div>
+                <div class="dl-sub">Full guide for sample collection &amp; shipping</div>
+              </div>
+            </a>
+
+            <!-- External link to Protexam -->
+            <a href="https://www.protexam.com/en-gb" target="_blank" class="external-cta">
+              <div class="ext-icon">
+                <svg width="20" height="20" fill="none" stroke="var(--shipped)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+              </div>
+              <div>
+                <div class="ext-title">Protexam Online</div>
+                <div class="ext-sub">Learn more about the test procedure and our research at protexam.com</div>
+              </div>
+              <div class="ext-arrow">
+                <svg width="16" height="16" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </div>
+            </a>
+
+          </div><!-- tab-instructions -->
+
+          <!-- ── FAQs TAB ── -->
+          <div id="tab-faqs" class="tab-panel">
+
+            <div class="faq-card">
+              <div class="faq-header-row">
+                <span class="faq-header-title">Frequently Asked Questions</span>
+              </div>
+
+              <div class="faq-item open">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                  <span class="faq-q-text">How does the protexam test work?</span>
+                  <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">The protexam test examines certain proteins in your urine that indicate a disease. The test is a technology that links two established measuring devices and is thus able to record all of the proteins in your urine. The data generated in this way is then processed using artificial intelligence in order to detect changes in your body at an early stage, before your organs are damaged.</div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                  <span class="faq-q-text">Why urine and not blood?</span>
+                  <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">The information carriers in the blood are broken down by enzymes shortly after they are taken. The amount of information contained in the blood therefore depends heavily on how quickly it was processed. This process is difficult to control. Urine, on the other hand, is a very stable information carrier. When the urine leaves the bladder, the enzymes' breakdown processes are already complete. This means that your urine sample can also be transported uncooled in a urine tube with a stabilizer.</div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                  <span class="faq-q-text">Will my health insurance cover the costs?</span>
+                  <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">The protexam test is currently for self-payers. If you book your protexam test with us, you agree to cover the costs yourself when booking. You should check with your health insurance company whether you will be reimbursed for the costs of the protexam test afterwards. We will issue you with an invoice for this upon request.</div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                  <span class="faq-q-text">How do I return the protexam test?</span>
+                  <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">In every protexam test package you will find a return slip from the express service. The enclosed instructions for use contain a detailed description of how to return the package with your urine sample to our laboratory. The return transport is of course free of charge for you.</div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                  <span class="faq-q-text">How long do I have to wait for the result?</span>
+                  <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">You will usually receive the result of your protexam test 2-3 days* after your urine sample has been received in our laboratory.</div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                  <span class="faq-q-text">Who will receive the results of my test?</span>
+                  <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">In view of the legal situation for in-vitro diagnostics (IVD) of the EU Directive, all protexam tests must be carried out under the instruction of a doctor and the diagnostic results may only be communicated to the patient by this doctor.</div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                  <span class="faq-q-text">Is my data secure and private?</span>
+                  <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">Yes. All data is handled in full compliance with GDPR. You have the right to access, correct, or delete your personal data at any time from Profile &amp; Settings.</div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                  <span class="faq-q-text">How safe is the protexam test?</span>
+                  <svg class="faq-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">The protexam tests can detect the disease with a very high degree of probability. We have checked the accuracy of each test in our clinical studies. The sensitivity (percentage of detection of the disease in people who are actually ill) and the specificity (percentage of detection of health in people who are actually healthy) are stated in the product data sheet of each protexam test. No medical test can guarantee 100 percent certainty.</div>
+              </div>
+
+            </div><!-- faq-card -->
+
+          </div><!-- tab-faqs -->
+
+        </div><!-- content-pad -->
+      </div><!-- app-content -->
+
+      <div class="bottom-nav">
+        <a href="mobile_home.html" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div><span class="nav-tab-label">Home</span></a>
+        <a href="mobile_status.html" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="nav-tab-label">Status</span></a>
+        <a href="mobile_results.html" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-tab-label">Results</span></a>
+        <a href="#" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-tab-label">Profile</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  item.classList.toggle('open');
+}
+</script>
+</body>
+</html>
