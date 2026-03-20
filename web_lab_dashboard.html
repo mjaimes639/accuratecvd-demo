@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccurateCVD-AI – Lab Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --primary:#7C3A68; --primary-dark:#5C2A4F; --primary-mid:#9B4F82; --primary-light:#EDD8E8; --primary-xlight:#F8F0F6;
+  --accent:#C23B5A; --accent-light:#FCEAEE;
+  --bg:#F5F0F7; --surface:#FFFFFF;
+  --text:#1C1330; --text-muted:#7A6B8A; --border:#E8DFF0;
+  --success:#2A7D5B; --success-bg:#E6F4EE;
+  --warning:#C47A1A; --warning-bg:#FEF3E2;
+  --danger:#C23B5A; --danger-bg:#FCEAEE;
+  --info:#1A6EA8; --info-bg:#E3F0FB;
+  --nav-h:56px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); }
+
+.top-nav { height:var(--nav-h); background:white; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 28px; position:sticky; top:0; z-index:100; box-shadow:0 1px 8px rgba(124,58,104,0.07); }
+.nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.brand-icon { width:34px; height:34px; background:linear-gradient(135deg,var(--primary),var(--accent)); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.brand-name { font-weight:700; font-size:15px; color:var(--text); line-height:1.2; display:block; }
+.brand-tag  { font-size:10px; color:var(--text-muted); }
+.nav-toggle-group { display:flex; gap:6px; }
+.nav-toggle { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500; text-decoration:none; border:1px solid var(--border); color:var(--text-muted); }
+.nav-toggle.active { background:var(--primary-light); color:var(--primary); border-color:var(--primary-light); }
+.nav-toggle svg { width:14px; height:14px; }
+.nav-right { display:flex; align-items:center; gap:14px; }
+.role-badge { background:var(--primary-xlight); color:var(--primary); font-size:12px; font-weight:600; padding:4px 10px; border-radius:8px; }
+.user-avatar { width:34px; height:34px; background:linear-gradient(135deg,var(--primary),var(--primary-mid)); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:700; }
+
+.page-layout { display:flex; min-height:calc(100vh - var(--nav-h)); }
+
+.sidebar { width:220px; flex-shrink:0; background:white; border-right:1px solid var(--border); padding:20px 0; position:sticky; top:var(--nav-h); height:calc(100vh - var(--nav-h)); overflow-y:auto; }
+.sidebar-section-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); padding:10px 18px 4px; margin-top:8px; }
+.sidebar-item { display:flex; align-items:center; gap:10px; padding:9px 18px; font-size:13px; font-weight:500; color:var(--text-muted); text-decoration:none; cursor:pointer; transition:all 0.15s; border-left:3px solid transparent; }
+.sidebar-item:hover { background:var(--primary-xlight); color:var(--primary); }
+.sidebar-item.active { background:var(--primary-xlight); color:var(--primary); border-left-color:var(--primary); font-weight:600; }
+.sidebar-item svg { width:16px; height:16px; flex-shrink:0; }
+.sidebar-badge { margin-left:auto; background:var(--accent); color:white; font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; }
+
+.main-content { flex:1; padding:28px; }
+.page-header { margin-bottom:22px; }
+.page-title { font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.5px; }
+.page-subtitle { font-size:13px; color:var(--text-muted); margin-top:2px; }
+
+/* Role switcher */
+.role-switcher { display:flex; gap:8px; margin-bottom:22px; background:white; border:1px solid var(--border); border-radius:10px; padding:4px; width:fit-content; }
+.role-btn { padding:6px 14px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer; border:none; background:transparent; color:var(--text-muted); transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+.role-btn.active { background:var(--primary); color:white; }
+
+/* Stats */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+.stat-card { background:white; border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 6px rgba(124,58,104,0.05); }
+.stat-left { }
+.stat-label { font-size:11px; color:var(--text-muted); font-weight:500; margin-bottom:4px; }
+.stat-value { font-size:26px; font-weight:700; color:var(--text); letter-spacing:-1px; }
+.stat-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+.si-blue   { background:var(--info-bg); }
+.si-green  { background:var(--success-bg); }
+.si-amber  { background:var(--warning-bg); }
+.si-red    { background:var(--danger-bg); }
+
+/* Two-col */
+.two-col { display:grid; grid-template-columns:1fr 340px; gap:18px; }
+
+/* Cards */
+.card { background:white; border:1px solid var(--border); border-radius:16px; box-shadow:0 1px 8px rgba(124,58,104,0.05); overflow:hidden; }
+.card-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.card-title { font-size:14px; font-weight:700; color:var(--text); }
+
+/* Kits table */
+.data-table { width:100%; border-collapse:collapse; }
+.data-table th { text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); padding:9px 14px; border-bottom:1px solid var(--border); background:#FDFBFE; }
+.data-table td { padding:10px 14px; border-bottom:1px solid #F5F0F8; font-size:12px; vertical-align:middle; }
+.data-table tr:last-child td { border-bottom:none; }
+.data-table tr:hover td { background:#FBF7FD; cursor:pointer; }
+.kit-id-mono { font-family:monospace; font-weight:600; font-size:12px; color:var(--primary); }
+
+.status-pill { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+.pill-results    { background:var(--success-bg); color:var(--success); }
+.pill-analysis   { background:var(--info-bg); color:var(--info); }
+.pill-processing { background:var(--warning-bg); color:var(--warning); }
+.pill-received   { background:#EEF6FF; color:#2563EB; }
+.pill-shipped    { background:var(--info-bg); color:var(--info); }
+.pill-ordered    { background:var(--bg); color:var(--text-muted); border:1px solid var(--border); }
+.pill-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.qc-pill-pass { background:var(--success-bg); color:var(--success); font-size:11px; font-weight:600; padding:2px 8px; border-radius:8px; display:inline-block; }
+.qc-pill-fail { background:var(--danger-bg); color:var(--danger); font-size:11px; font-weight:600; padding:2px 8px; border-radius:8px; display:inline-block; }
+.qc-pill-pend { background:var(--warning-bg); color:var(--warning); font-size:11px; font-weight:600; padding:2px 8px; border-radius:8px; display:inline-block; }
+
+.view-link { color:var(--primary); font-size:12px; font-weight:600; text-decoration:none; }
+
+.table-controls { display:flex; gap:10px; align-items:center; }
+.search-wrap { position:relative; }
+.search-wrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted); width:13px; height:13px; }
+.search-input { padding:7px 10px 7px 30px; border:1.5px solid var(--border); border-radius:9px; font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text); outline:none; background:var(--bg); width:200px; }
+.filter-select { padding:7px 10px; border:1.5px solid var(--border); border-radius:9px; font-family:'DM Sans',sans-serif; font-size:12px; background:white; outline:none; }
+.table-footer { padding:10px 14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--text-muted); }
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; text-decoration:none; }
+.btn-primary { background:var(--primary); color:white; }
+.btn-success { background:var(--success); color:white; }
+.btn-outline { background:white; color:var(--text); border:1.5px solid var(--border); }
+.btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+.btn svg { width:13px; height:13px; }
+
+/* AI Toggle */
+.ai-toggle-wrap { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+.ai-toggle-label { font-size:13px; font-weight:600; color:var(--text); }
+.ai-toggle-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.toggle-switch-row { display:flex; gap:6px; }
+.toggle-opt { padding:5px 12px; border-radius:7px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:white; color:var(--text-muted); transition:all 0.2s; }
+.toggle-opt.active { background:var(--primary); color:white; border-color:var(--primary); }
+
+/* Activity + QC panels */
+.activity-item { padding:10px 16px; border-bottom:1px solid #F5F0F8; }
+.activity-item:last-child { border-bottom:none; }
+.activity-time { font-size:10px; color:var(--text-muted); }
+.activity-title { font-size:12px; font-weight:600; color:var(--text); display:flex; align-items:center; gap:6px; }
+.activity-sub { font-size:11px; color:var(--text-muted); }
+.adot { width:7px; height:7px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.adot-green { background:var(--success); }
+.adot-amber { background:var(--warning); }
+.adot-red   { background:var(--danger); }
+.adot-blue  { background:var(--info); }
+
+/* Quick actions panel */
+.quick-actions { padding:14px 16px; display:flex; flex-direction:column; gap:8px; }
+.qa-btn { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:600; cursor:pointer; text-decoration:none; transition:all 0.15s; border:1px solid var(--border); background:white; color:var(--text); }
+.qa-btn:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-xlight); }
+.qa-icon { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.qa-blue   { background:var(--info-bg); }
+.qa-amber  { background:var(--warning-bg); }
+.qa-purple { background:var(--primary-light); }
+
+/* Donut chart */
+.donut-wrap { padding:14px 16px; display:flex; gap:16px; align-items:center; }
+.donut-legend { display:flex; flex-direction:column; gap:6px; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-muted); }
+.legend-dot { width:8px; height:8px; border-radius:50%; }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="nav-brand" href="#">
+    <div class="brand-icon">🫀</div>
+    <div><span class="brand-name">AccurateCVD-AI</span><span class="brand-tag">Interactive Demo</span></div>
+  </a>
+  <div class="nav-toggle-group">
+    <a href="mobile_home.html" class="nav-toggle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>Mobile App</a>
+    <a href="web_dashboard.html" class="nav-toggle active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Web Portal</a>
+  </div>
+  <div class="nav-right">
+    <span class="role-badge" id="currentRoleBadge">Lab Supervisor</span>
+    <span style="font-size:13px;color:var(--text-muted);" id="currentUser">Jonas Hartmann</span>
+    <div class="user-avatar" id="currentAvatar">JH</div>
+  </div>
+</nav>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Patients</div>
+    <a href="web_dashboard.html" class="sidebar-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Patients</a>
+    <a href="web_lab_dashboard.html" class="sidebar-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>Kits & Lab</a>
+    <div class="sidebar-section-label">Results</div>
+    <a href="#" class="sidebar-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>AI Results<span class="sidebar-badge">3</span></a>
+    <a href="#" class="sidebar-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Reports</a>
+    <div class="sidebar-section-label">Admin</div>
+    <a href="#" class="sidebar-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>Settings</a>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-title" id="pageTitle">Lab Dashboard</div>
+      <div class="page-subtitle" id="pageSubtitle">Welcome back, Jonas Hartmann</div>
+    </div>
+
+    <!-- Role Switcher -->
+    <div style="margin-bottom:18px;">
+      <span style="font-size:11px;font-weight:600;color:var(--text-muted);margin-right:8px;">View as:</span>
+      <div class="role-switcher" style="display:inline-flex;">
+        <button class="role-btn active" onclick="switchRole('supervisor',this)">Lab Supervisor</button>
+        <button class="role-btn" onclick="switchRole('operator',this)">Lab Operator</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-left"><div class="stat-label">Kits in Pipeline</div><div class="stat-value">5</div></div>
+        <div class="stat-icon si-blue"><svg width="18" height="18" fill="none" stroke="var(--info)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8"/></svg></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-left"><div class="stat-label">QC Pass Rate</div><div class="stat-value" style="color:var(--success);">67%</div></div>
+        <div class="stat-icon si-green"><svg width="18" height="18" fill="none" stroke="var(--success)" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-left"><div class="stat-label">Pending QC</div><div class="stat-value">1</div></div>
+        <div class="stat-icon si-amber"><svg width="18" height="18" fill="none" stroke="var(--warning)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-left"><div class="stat-label">Failed QC</div><div class="stat-value" style="color:var(--danger);">1</div></div>
+        <div class="stat-icon si-red"><svg width="18" height="18" fill="none" stroke="var(--danger)" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      </div>
+    </div>
+
+    <!-- AI Mode Toggle -->
+    <div class="ai-toggle-wrap">
+      <div>
+        <div class="ai-toggle-label">AI Execution Mode</div>
+        <div class="ai-toggle-sub">Choose how AI analysis results are processed for this lab session</div>
+      </div>
+      <div class="toggle-switch-row">
+        <div class="toggle-opt active" onclick="selectAIMode(this,'internal')">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:3px;"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+          Internal AI Service
+        </div>
+        <div class="toggle-opt" onclick="selectAIMode(this,'manual')">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:3px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Manual Import
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+
+      <!-- Kits Table -->
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-header">
+            <div class="card-title">Kit Queue</div>
+            <div class="table-controls">
+              <div class="search-wrap">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input class="search-input" placeholder="Search by Kit ID…">
+              </div>
+              <select class="filter-select"><option>All Statuses</option><option>Processing</option><option>Sample Received</option><option>Results Available</option></select>
+              <select class="filter-select"><option>All QC</option><option>Passed</option><option>Failed</option><option>Pending</option></select>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Kit ID</th><th>Status</th><th>Birth Year</th><th>Ordered By</th><th>Registered</th><th>QC</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr onclick="location.href='web_kit_detail.html'"><td><span class="kit-id-mono">HCU-2026-A1B2</span></td><td><span class="status-pill pill-results"><span class="pill-dot"></span>Results Available</span></td><td>1958</td><td>Dr. M. Weber</td><td style="color:var(--text-muted);">Jan 10, 2026</td><td><span class="qc-pill-pass">Passed</span></td><td><a href="web_kit_detail.html" class="view-link">View</a></td></tr>
+              <tr><td><span class="kit-id-mono">HCU-2026-C3D4</span></td><td><span class="status-pill pill-results"><span class="pill-dot"></span>Results Available</span></td><td>1962</td><td>Dr. M. Weber</td><td style="color:var(--text-muted);">Jan 18, 2026</td><td><span class="qc-pill-pass">Passed</span></td><td><a href="#" class="view-link">View</a></td></tr>
+              <tr><td><span class="kit-id-mono">HCU-2026-65F0</span></td><td><span class="status-pill pill-analysis"><span class="pill-dot"></span>Analysis Complete</span></td><td>1955</td><td>Dr. S. Bauer</td><td style="color:var(--text-muted);">Feb 3, 2026</td><td><span class="qc-pill-pass">Passed</span></td><td><a href="web_ai_results.html" class="view-link">View</a></td></tr>
+              <tr><td><span class="kit-id-mono">HCU-2026-97H8</span></td><td><span class="status-pill pill-processing"><span class="pill-dot"></span>Processing</span></td><td>1960</td><td>Dr. M. Weber</td><td style="color:var(--text-muted);">Feb 14, 2026</td><td><span class="qc-pill-pend">Pending</span></td><td><a href="#" class="view-link">View</a></td></tr>
+              <tr><td><span class="kit-id-mono">HCU-2026-19J6</span></td><td><span class="status-pill pill-received"><span class="pill-dot"></span>Sample Received</span></td><td>1967</td><td>Dr. S. Bauer</td><td style="color:var(--text-muted);">Feb 20, 2026</td><td><span class="qc-pill-fail">Failed</span></td><td><a href="#" class="view-link">View</a></td></tr>
+              <tr><td><span class="kit-id-mono">HCU-2026-K1L2</span></td><td><span class="status-pill pill-results"><span class="pill-dot"></span>Results Available</span></td><td>1953</td><td>Dr. S. Bauer</td><td style="color:var(--text-muted);">Dec 2, 2025</td><td><span class="qc-pill-pass">Passed</span></td><td><a href="#" class="view-link">View</a></td></tr>
+              <tr><td><span class="kit-id-mono">HCU-2026-M3N4</span></td><td><span class="status-pill pill-shipped"><span class="pill-dot"></span>Shipped</span></td><td>1958</td><td>Dr. M. Weber</td><td style="color:var(--text-muted);">—</td><td><span style="color:var(--text-muted);font-size:11px;">—</span></td><td><a href="#" class="view-link">View</a></td></tr>
+              <tr><td><span class="kit-id-mono">HCU-2026-05P0</span></td><td><span class="status-pill pill-ordered"><span class="pill-dot"></span>Ordered</span></td><td>1962</td><td>Dr. M. Weber</td><td style="color:var(--text-muted);">—</td><td><span style="color:var(--text-muted);font-size:11px;">—</span></td><td><a href="#" class="view-link">View</a></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer"><span>Showing 1–8 of 8 kits</span></div>
+        </div>
+      </div>
+
+      <!-- Right panel: activity + QC donut + quick actions -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Recent Kit Activity -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Kit Activity</div></div>
+          <div>
+            <div class="activity-item"><div class="activity-time">10 min ago</div><div class="activity-title"><span class="adot adot-green"></span>QC Passed</div><div class="activity-sub">HCU-2026-97H8 · CE-MS-INST-03</div></div>
+            <div class="activity-item"><div class="activity-time">2 hours ago</div><div class="activity-title"><span class="adot adot-blue"></span>Sample Processing</div><div class="activity-sub">HCU-2026-19J6 · CE-MS-INST-02</div></div>
+            <div class="activity-item"><div class="activity-time">Yesterday</div><div class="activity-title"><span class="adot adot-red"></span>QC Failed</div><div class="activity-sub">HCU-2026-19J6 · CE-MS-INST-02</div></div>
+            <div class="activity-item"><div class="activity-time">2 days ago</div><div class="activity-title"><span class="adot adot-green"></span>Analysis Complete</div><div class="activity-sub">HCU-2026-65F0 · CE-MS-INST-02</div></div>
+            <div class="activity-item"><div class="activity-time">3 days ago</div><div class="activity-title"><span class="adot adot-green"></span>QC Approved</div><div class="activity-sub">HCU-2025-A1B2 · CE-MS-INST-03</div></div>
+          </div>
+        </div>
+
+        <!-- QC Distribution -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">QC Distribution</div></div>
+          <div class="donut-wrap">
+            <canvas id="qcDonut" width="120" height="120" style="flex-shrink:0;"></canvas>
+            <div class="donut-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--success);"></div>Passed (4)</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--danger);"></div>Failed (1)</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--warning);"></div>Pending (1)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Quick Actions</div></div>
+          <div class="quick-actions">
+            <a href="#" class="qa-btn" onclick="runAI()">
+              <div class="qa-icon qa-purple"><svg width="14" height="14" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div><div style="font-size:12px;font-weight:600;">Review QC Results</div><div style="font-size:10px;color:var(--text-muted);">1 pending approval</div></div>
+            </a>
+            <a href="#" class="qa-btn">
+              <div class="qa-icon qa-amber"><svg width="14" height="14" fill="none" stroke="var(--warning)" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+              <div><div style="font-size:12px;font-weight:600;">View Kit Queue</div><div style="font-size:10px;color:var(--text-muted);">5 kits in pipeline</div></div>
+            </a>
+            <a href="#" class="qa-btn" id="importBtn">
+              <div class="qa-icon qa-blue"><svg width="14" height="14" fill="none" stroke="var(--info)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+              <div><div style="font-size:12px;font-weight:600;" id="aiActionLabel">Run AI Analysis</div><div style="font-size:10px;color:var(--text-muted);" id="aiActionSub">Trigger internal AI service</div></div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// QC Donut
+new Chart(document.getElementById('qcDonut').getContext('2d'), {
+  type:'doughnut',
+  data:{ datasets:[{ data:[4,1,1], backgroundColor:['#2A7D5B','#C23B5A','#C47A1A'], borderWidth:2, borderColor:'white' }] },
+  options:{ responsive:false, cutout:'65%', plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const l=['Passed','Failed','Pending'];return ` ${l[ctx.dataIndex]}: ${ctx.raw}`;}}}}, animation:{duration:600} }
+});
+
+function switchRole(role, btn) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if(role === 'supervisor') {
+    document.getElementById('currentRoleBadge').textContent = 'Lab Supervisor';
+    document.getElementById('currentUser').textContent = 'Jonas Hartmann';
+    document.getElementById('currentAvatar').textContent = 'JH';
+    document.getElementById('pageSubtitle').textContent = 'Welcome back, Jonas Hartmann';
+  } else {
+    document.getElementById('currentRoleBadge').textContent = 'Lab Operator';
+    document.getElementById('currentUser').textContent = 'Lena Fischer';
+    document.getElementById('currentAvatar').textContent = 'LF';
+    document.getElementById('pageSubtitle').textContent = 'Welcome back, Lena Fischer';
+  }
+}
+
+function selectAIMode(btn, mode) {
+  document.querySelectorAll('.toggle-opt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if(mode === 'manual') {
+    document.getElementById('aiActionLabel').textContent = 'Import AI Results';
+    document.getElementById('aiActionSub').textContent = 'Upload JSON results file';
+  } else {
+    document.getElementById('aiActionLabel').textContent = 'Run AI Analysis';
+    document.getElementById('aiActionSub').textContent = 'Trigger internal AI service';
+  }
+}
+
+function runAI() {
+  const mode = document.querySelector('.toggle-opt.active').textContent.trim();
+  if(mode.includes('Manual')) {
+    alert('Upload AI Results\n\nIn the real app: select a kit from the queue, then upload a JSON file with AI results. Schema validation and preview before import.');
+  } else {
+    alert('Run AI Analysis\n\nIn the real app: select a kit, validate all required data is present, confirm, and trigger the internal AI service. Monitor progress in the queue.');
+  }
+}
+</script>
+</body>
+</html>

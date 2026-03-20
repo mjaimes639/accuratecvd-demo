@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccurateCVD-AI – User Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#7C3A68; --primary-dark:#5C2A4F; --primary-mid:#9B4F82; --primary-light:#EDD8E8; --primary-xlight:#F8F0F6;
+  --accent:#C23B5A; --accent-light:#FCEAEE;
+  --bg:#F5F0F7; --surface:#FFFFFF;
+  --text:#1C1330; --text-muted:#7A6B8A; --border:#E8DFF0;
+  --success:#2A7D5B; --success-bg:#E6F4EE;
+  --warning:#C47A1A; --warning-bg:#FEF3E2;
+  --danger:#C23B5A; --danger-bg:#FCEAEE;
+  --info:#1A6EA8; --info-bg:#E3F0FB;
+  --nav-h:56px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+.top-nav { height:var(--nav-h); background:white; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 28px; position:sticky; top:0; z-index:100; box-shadow:0 1px 8px rgba(124,58,104,0.07); }
+.nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.brand-name { font-weight:700; font-size:15px; color:var(--text); letter-spacing:-0.3px; line-height:1.2; }
+.brand-tag  { font-size:10px; color:var(--text-muted); font-weight:400; }
+.nav-toggle-group { display:flex; gap:6px; }
+.nav-toggle { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500; text-decoration:none; border:1px solid var(--border); color:var(--text-muted); transition:all 0.2s; }
+.nav-toggle.active { background:var(--primary-light); color:var(--primary); border-color:var(--primary-light); }
+.nav-toggle svg { width:14px; height:14px; }
+.nav-right { display:flex; align-items:center; gap:14px; }
+.role-badge { background:var(--primary-xlight); color:var(--primary); font-size:12px; font-weight:600; padding:4px 10px; border-radius:8px; }
+.user-avatar { width:34px; height:34px; background:linear-gradient(135deg,var(--primary),var(--primary-mid)); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:700; }
+
+.page-layout { display:flex; min-height:calc(100vh - var(--nav-h)); }
+
+.sidebar { width:220px; flex-shrink:0; background:white; border-right:1px solid var(--border); padding:20px 0; display:flex; flex-direction:column; gap:4px; position:sticky; top:var(--nav-h); height:calc(100vh - var(--nav-h)); }
+.sidebar-section-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); padding:10px 18px 4px; margin-top:8px; }
+.sidebar-item { display:flex; align-items:center; gap:10px; padding:9px 18px; font-size:13px; font-weight:500; color:var(--text-muted); text-decoration:none; cursor:pointer; transition:all 0.15s; border-left:3px solid transparent; }
+.sidebar-item:hover { background:var(--primary-xlight); color:var(--primary); }
+.sidebar-item.active { background:var(--primary-xlight); color:var(--primary); border-left-color:var(--primary); font-weight:600; }
+.sidebar-item svg { width:16px; height:16px; flex-shrink:0; }
+.sidebar-badge { margin-left:auto; background:var(--accent); color:white; font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; }
+
+.main-content { flex:1; padding:28px; }
+
+/* Breadcrumb */
+.breadcrumb { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-muted); margin-bottom:18px; }
+.breadcrumb a { color:var(--primary); text-decoration:none; font-weight:500; }
+.breadcrumb a:hover { text-decoration:underline; }
+.bc-sep { color:var(--border); }
+
+/* Patient Header */
+.patient-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
+.patient-header-left { display:flex; align-items:center; gap:14px; }
+.patient-avatar { width:50px; height:50px; background:linear-gradient(135deg,var(--primary-light),var(--primary-mid)); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.patient-name-block {}
+.patient-name { font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; }
+.patient-meta { font-size:12px; color:var(--text-muted); margin-top:3px; display:flex; align-items:center; gap:12px; }
+.meta-item { display:flex; align-items:center; gap:4px; }
+.pid-chip { background:var(--primary-xlight); color:var(--primary); font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; font-family:monospace; }
+.status-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; }
+.badge-results { background:var(--success-bg); color:var(--success); }
+
+/* Tab Bar */
+.tab-bar { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:22px; }
+.tab-btn { padding:10px 18px; font-size:13px; font-weight:500; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.15s; white-space:nowrap; }
+.tab-btn:hover { color:var(--primary); }
+.tab-btn.active { color:var(--primary); font-weight:700; border-bottom-color:var(--primary); }
+
+/* Tab panels */
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* Cards */
+.card { background:white; border:1px solid var(--border); border-radius:14px; box-shadow:0 1px 6px rgba(124,58,104,0.05); }
+.card-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.card-title { font-size:13px; font-weight:700; color:var(--text); }
+.card-body { padding:18px; }
+
+/* Grid layouts */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.full-row { margin-bottom:16px; }
+
+/* Info field */
+.info-row { display:flex; flex-direction:column; gap:2px; margin-bottom:12px; }
+.info-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); }
+.info-value { font-size:13px; font-weight:500; color:var(--text); }
+.info-value.mono { font-family:monospace; color:var(--primary); font-size:14px; font-weight:700; }
+
+/* Kit table */
+.kit-table { width:100%; border-collapse:collapse; }
+.kit-table th { text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); padding:8px 12px; border-bottom:1px solid var(--border); background:#FDFBFE; }
+.kit-table td { padding:10px 12px; border-bottom:1px solid #F5F0F8; font-size:13px; }
+.kit-table tr:last-child td { border-bottom:none; }
+.kit-table tr:hover td { background:#FBF7FD; }
+.kit-id-link { color:var(--primary); font-weight:600; font-family:monospace; font-size:12px; text-decoration:none; }
+.kit-id-link:hover { text-decoration:underline; }
+.status-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:600; }
+.pill-results    { background:var(--success-bg); color:var(--success); }
+.pill-shipped    { background:var(--info-bg); color:var(--info); }
+.pill-processing { background:var(--warning-bg); color:var(--warning); }
+.pill-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+/* Quick Links */
+.quick-links { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.quick-link { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:var(--bg); border:1.5px solid var(--border); border-radius:12px; text-decoration:none; color:var(--text); font-size:13px; font-weight:600; transition:all 0.2s; }
+.quick-link:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-xlight); }
+.ql-clinical { border-left:3px solid var(--info); }
+.ql-ai       { border-left:3px solid var(--primary); }
+.ql-reports  { border-left:3px solid var(--success); }
+
+/* Timeline */
+.timeline { display:flex; flex-direction:column; gap:0; }
+.tl-item { display:flex; gap:12px; position:relative; padding-bottom:14px; }
+.tl-item:not(:last-child)::after { content:''; position:absolute; left:9px; top:22px; width:2px; bottom:0; background:var(--border); }
+.tl-dot { width:20px; height:20px; border-radius:50%; background:var(--primary-light); border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; flex-shrink:0; z-index:1; margin-top:2px; }
+.tl-dot svg { width:10px; height:10px; color:var(--primary); }
+.tl-body { flex:1; }
+.tl-title { font-size:12px; font-weight:600; color:var(--text); }
+.tl-date  { font-size:11px; color:var(--text-muted); }
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; text-decoration:none; }
+.btn-primary { background:var(--primary); color:white; }
+.btn-outline { background:white; color:var(--text); border:1.5px solid var(--border); }
+.btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+.btn svg { width:14px; height:14px; }
+
+/* Clinical data form */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-group { display:flex; flex-direction:column; gap:5px; }
+.form-label { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
+.form-input { padding:9px 12px; border:1.5px solid var(--border); border-radius:9px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--text); outline:none; background:var(--bg); }
+.form-input:focus { border-color:var(--primary); background:white; }
+.form-input-auto { background:#f0f0f5; color:var(--text-muted); font-style:italic; }
+.form-select { padding:9px 12px; border:1.5px solid var(--border); border-radius:9px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--text); outline:none; background:var(--bg); cursor:pointer; }
+.radio-group { display:flex; gap:8px; }
+.radio-option { padding:6px 12px; border-radius:20px; font-size:12px; font-weight:500; cursor:pointer; border:1.5px solid var(--border); color:var(--text-muted); }
+.radio-option.selected { border-color:var(--primary); color:var(--primary); background:var(--primary-light); }
+.checkbox-group { display:flex; flex-direction:column; gap:7px; }
+.checkbox-item { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); cursor:pointer; }
+.checkbox-item input { width:15px; height:15px; accent-color:var(--primary); cursor:pointer; }
+.form-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; padding-top:16px; border-top:1px solid var(--border); }
+.autosave-badge { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--success); font-weight:500; }
+
+/* CE-MS tab */
+.ce-ms-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+.ce-stat { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
+.ce-stat-label { font-size:10px; color:var(--text-muted); margin-bottom:3px; font-weight:500; }
+.ce-stat-value { font-size:18px; font-weight:700; color:var(--text); }
+.qc-bar-wrap { height:6px; background:var(--border); border-radius:3px; overflow:hidden; margin-top:4px; }
+.qc-bar { height:100%; border-radius:3px; }
+.qc-pass { background:var(--success); }
+.qc-warn { background:var(--warning); }
+
+/* No data placeholder */
+.no-data { text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px; }
+.no-data svg { width:36px; height:36px; margin:0 auto 10px; opacity:0.3; display:block; }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="nav-brand" href="#">
+    <div class="brand-icon">🫀</div>
+    <div><span class="brand-name" style="display:block;">AccurateCVD-AI</span><span class="brand-tag">Interactive Demo</span></div>
+  </a>
+  <div class="nav-toggle-group">
+    <a href="mobile_home.html" class="nav-toggle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>Mobile App</a>
+    <a href="web_dashboard.html" class="nav-toggle active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Web Portal</a>
+  </div>
+  <div class="nav-right">
+    <span class="role-badge">Physician</span>
+    <span style="font-size:13px;color:var(--text-muted);">Dr. Markus Weber</span>
+    <div class="user-avatar">MW</div>
+  </div>
+</nav>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Users</div>
+    <a href="web_dashboard.html" class="sidebar-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Users</a>
+    <a href="web_lab_dashboard.html" class="sidebar-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>Kits & Lab</a>
+    <div class="sidebar-section-label">Results</div>
+    <a href="#" class="sidebar-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>AI Results<span class="sidebar-badge">3</span></a>
+    <a href="#" class="sidebar-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Reports</a>
+    <div class="sidebar-section-label">Admin</div>
+    <a href="#" class="sidebar-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>Settings</a>
+  </aside>
+
+  <main class="main-content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="web_dashboard.html">Users</a>
+      <span class="bc-sep">›</span>
+      <span>User Detail</span>
+    </div>
+
+    <!-- Patient Header -->
+    <div class="patient-header">
+      <div class="patient-header-left">
+        <div class="patient-avatar">
+          <svg width="26" height="26" fill="none" stroke="var(--primary)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="patient-name-block">
+          <div class="patient-name">
+            Jean-Pierre Dubois
+            <span class="pid-chip">PID-9C5A</span>
+          </div>
+          <div class="patient-meta">
+            <span class="meta-item">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              DOB: 1960-04-18
+            </span>
+          </div>
+        </div>
+      </div>
+      <span class="status-badge badge-results">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Results Available
+      </span>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <div class="tab-btn active" onclick="switchTab('overview',this)">Overview</div>
+      <div class="tab-btn" onclick="switchTab('clinical',this)">Clinical Data</div>
+      <div class="tab-btn" onclick="switchTab('cems',this)">CE-MS Data</div>
+      <div class="tab-btn" onclick="switchTab('ai',this)">AI Results</div>
+      <div class="tab-btn" onclick="switchTab('reports',this)">Reports</div>
+    </div>
+
+    <!-- ── OVERVIEW TAB ── -->
+    <div id="tab-overview" class="tab-panel active">
+      <div class="two-col">
+        <!-- Patient Info -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">User Information</div></div>
+          <div class="card-body">
+            <div class="info-row"><div class="info-label">Email</div><div class="info-value">jean.pierre@icloud.de</div></div>
+            <div class="info-row"><div class="info-label">Phone</div><div class="info-value">+33 1 2345678</div></div>
+            <div class="info-row"><div class="info-label">Date of Birth</div><div class="info-value">1960-04-18</div></div>
+            <div class="info-row"><div class="info-label">Personal ID</div><div class="info-value mono">PID-9C5A ✓</div></div>
+          </div>
+        </div>
+        <!-- Kits -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Kits (2)</div>
+          </div>
+          <table class="kit-table">
+            <thead><tr><th>Kit ID</th><th>Status</th><th>Ordered</th></tr></thead>
+            <tbody>
+              <tr onclick="location.href='web_ai_results_JPD.html'" style="cursor:pointer">
+                <td><a href="web_ai_results_JPD.html" class="kit-id-link">HCU-2026-97H8</a></td>
+                <td><span class="status-pill pill-results"><span class="pill-dot"></span>Results Available</span></td>
+                <td style="font-size:12px;color:var(--text-muted);">Feb 14, 2026</td>
+              </tr>
+              <tr>
+                <td><span class="kit-id-link" style="cursor:default;">HCU-2026-V1W2</span></td>
+                <td><span class="status-pill pill-shipped"><span class="pill-dot"></span>Shipped</span></td>
+                <td style="font-size:12px;color:var(--text-muted);">Mar 12, 2026</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Patient Actions -->
+      <div class="card full-row">
+        <div class="card-header"><div class="card-title">User Actions</div></div>
+        <div class="card-body" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-outline"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8"/></svg>Order New Kit</button>
+          <button class="btn btn-outline"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Kit ID</button>
+          <span style="font-size:12px;color:var(--text-muted);">Personal ID: <span style="color:var(--success);font-weight:600;">✓ PID-9C5A</span></span>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="card full-row">
+        <div class="card-header"><div class="card-title">Quick Links</div></div>
+        <div class="card-body">
+          <div class="quick-links">
+            <a href="#" onclick="switchTab('clinical',document.querySelectorAll('.tab-btn')[1]);return false;" class="quick-link ql-clinical">
+              <span>Clinical Data</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </a>
+            <a href="web_ai_results_JPD.html" class="quick-link ql-ai">
+              <span>AI Results</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </a>
+            <a href="web_report_JPD.html" class="quick-link ql-reports">
+              <span>Reports</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kit Event Timeline -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">Kit Event Timeline <span style="font-size:11px;color:var(--text-muted);font-weight:400;">(HCU-2026-V1W2)</span></div></div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="tl-item"><div class="tl-dot"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="tl-body"><div class="tl-title">Kit HCU-2026-V1W2 ordered</div><div class="tl-date">kit · Mar 12, 2026</div></div></div>
+            <div class="tl-item"><div class="tl-dot"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="tl-body"><div class="tl-title">Kit shipped to user</div><div class="tl-date">logistics · Mar 1, 2026</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CLINICAL DATA TAB ── -->
+    <div id="tab-clinical" class="tab-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:18px;font-weight:700;color:var(--text);">Clinical Data — Jean-Pierre Dubois</div>
+        <div class="autosave-badge"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Auto-saved</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Cardiovascular Measurements</div><div style="font-size:11px;color:var(--text-muted);">User ID: PID-9C5A</div></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">LDL Cholesterol (mmol/L)</label><input class="form-input" type="number" value="4.2" step="0.1"></div>
+            <div class="form-group"><label class="form-label">HDL Cholesterol (mmol/L)</label><input class="form-input" type="number" value="1.1" step="0.1"></div>
+            <div class="form-group"><label class="form-label">Triglycerides (mmol/L)</label><input class="form-input" type="number" value="2.3" step="0.1"></div>
+            <div class="form-group"><label class="form-label">Blood Glucose (mmol/L)</label><input class="form-input" type="number" value="6.1" step="0.1"></div>
+            <div class="form-group"><label class="form-label">HbA1c (%)</label><input class="form-input" type="number" value="6.8" step="0.1"></div>
+            <div class="form-group"><label class="form-label">Cardiac Troponin (ng/L)</label><input class="form-input" type="number" value="18.4" step="0.1"></div>
+            <div class="form-group"><label class="form-label">CRP (mg/L)</label><input class="form-input" type="number" value="4.7" step="0.1"></div>
+            <div class="form-group"><label class="form-label">BNP (pg/mL)</label><input class="form-input" type="number" value="112" step="1"></div>
+            <div class="form-group"><label class="form-label">Blood Pressure (mmHg)</label><input class="form-input" type="text" value="148/92"></div>
+            <div class="form-group"><label class="form-label">Heart Rate (bpm)</label><input class="form-input" type="number" value="78"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:14px;"></div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Examination & History</div></div>
+          <div class="card-body">
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label">ECG Findings</label>
+              <div class="radio-group">
+                <div class="radio-option">Normal</div>
+                <div class="radio-option selected">Abnormal</div>
+              </div>
+              <textarea style="width:100%;margin-top:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;resize:none;height:60px;outline:none;">ST-segment depression in leads V4-V6. Left ventricular hypertrophy pattern.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Comorbidities</label>
+              <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" checked> Hypertension</label>
+                <label class="checkbox-item"><input type="checkbox" checked> Diabetes Mellitus Type 2</label>
+                <label class="checkbox-item"><input type="checkbox"> Atrial Fibrillation</label>
+                <label class="checkbox-item"><input type="checkbox"> Heart Failure</label>
+                <label class="checkbox-item"><input type="checkbox" checked> Dyslipidaemia</label>
+                <label class="checkbox-item"><input type="checkbox"> Previous MI</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Previous Test Results</div></div>
+          <div class="card-body">
+            <div style="background:var(--bg);border-radius:10px;padding:14px;font-size:12px;color:var(--text-muted);text-align:center;">Historical values will appear here when previous kits have been processed.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline">Cancel</button>
+        <button class="btn btn-outline"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/></svg>Save Draft</button>
+        <button class="btn btn-primary"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/></svg>Submit</button>
+      </div>
+    </div>
+
+    <!-- ── CE-MS DATA TAB ── -->
+    <div id="tab-cems" class="tab-panel">
+      <div class="ce-ms-stats">
+        <div class="ce-stat"><div class="ce-stat-label">Quality Score</div><div class="ce-stat-value">87.4</div><div class="qc-bar-wrap"><div class="qc-bar qc-pass" style="width:87%;"></div></div></div>
+        <div class="ce-stat"><div class="ce-stat-label">QC Status</div><div class="ce-stat-value" style="color:var(--success);font-size:14px;">✓ Passed</div></div>
+        <div class="ce-stat"><div class="ce-stat-label">Total Peptides</div><div class="ce-stat-value">1,847</div></div>
+        <div class="ce-stat"><div class="ce-stat-label">Run Date</div><div class="ce-stat-value" style="font-size:14px;">Mar 1, 2026</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">CE-MS File Upload</div>
+          <button class="btn btn-primary" style="font-size:12px;padding:6px 12px;">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload CE-MS File
+          </button>
+        </div>
+        <div class="card-body">
+          <div style="border:2px dashed var(--border);border-radius:12px;padding:30px;text-align:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:4px;">Drag & drop CE-MS data file here</div>
+            <div style="font-size:11px;color:var(--text-muted);">Supports .csv, .tsv, .mzML · Max 100 MB</div>
+            <div style="margin-top:10px;font-size:11px;color:var(--success);">✓ HCU-2026-97H8_cems_data.csv uploaded Mar 1, 2026</div>
+          </div>
+          <div style="margin-top:14px;padding:12px 14px;background:var(--success-bg);border-radius:10px;font-size:12px;color:var(--success);font-weight:500;">QC Checkpoints: All passed · Instrument: CE-MS-INST-01 · Technician: L. Fischer</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AI RESULTS TAB (links out) ── -->
+    <div id="tab-ai" class="tab-panel">
+      <div class="card">
+        <div class="card-header"><div class="card-title">AI Analysis Results</div><a href="web_ai_results_JPD.html" class="btn btn-primary" style="font-size:12px;padding:6px 14px;">Open Full View →</a></div>
+        <div class="card-body" style="text-align:center;padding:30px;">
+          <div style="font-size:40px;margin-bottom:12px;">🧬</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">AI Analysis Available</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Kit HCU-2026-97H8 · Model v2.1.0 · Analysed —</div>
+          <div style="display:inline-flex;gap:14px;align-items:center;background:var(--success-bg);padding:10px 18px;border-radius:10px;">
+            <span style="font-size:22px;font-weight:800;color:var(--success);">28</span>
+            <div style="text-align:left;"><div style="font-size:11px;color:var(--text-muted);">Risk Score</div><div style="font-size:13px;font-weight:700;color:var(--success);">LOW</div></div>
+            <div style="background:var(--primary-xlight);padding:8px 12px;border-radius:8px;"><div style="font-size:11px;color:var(--text-muted);">Confidence</div><div style="font-size:14px;font-weight:700;color:var(--primary);">87%</div></div>
+          </div>
+          <div style="margin-top:16px;"><a href="web_ai_results_JPD.html" class="btn btn-primary">View Full AI Analysis →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REPORTS TAB ── -->
+    <div id="tab-reports" class="tab-panel">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Reports</div><a href="web_report_JPD.html" class="btn btn-primary" style="font-size:12px;padding:6px 14px;">Generate New Report</a></div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg);border-radius:10px;border:1px solid var(--border);">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);">Standard Report – English</div>
+              <div style="font-size:11px;color:var(--text-muted);">Generated — · Kit HCU-2026-97H8</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-outline" style="font-size:11px;padding:5px 10px;">Preview</button>
+              <button class="btn btn-primary" style="font-size:11px;padding:5px 10px;">Download PDF</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+</script>
+</body>
+</html>
