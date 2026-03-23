@@ -82,17 +82,25 @@
   .dist-score-label { text-align:center; font-size:10px; color:var(--primary); font-weight:600; margin-bottom:4px; }
 
   /* ─── Peptide Table ─── */
-  .peptide-table { width:100%; border-collapse:collapse; font-size:11px; }
-  .peptide-table th { text-align:left; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); padding:6px 8px; border-bottom:1px solid var(--border); background:#faf8fc; }
-  .peptide-table th:last-child { text-align:right; }
-  .peptide-table td { padding:7px 8px; border-bottom:1px solid #f5f0f8; vertical-align:middle; }
+  .peptide-table { width:100%; border-collapse:collapse; font-size:10px; }
+  .peptide-table th { text-align:right; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; color:var(--text-muted); padding:5px 4px; border-bottom:1px solid var(--border); background:#faf8fc; }
+  .peptide-table th:nth-child(1),
+  .peptide-table th:nth-child(2),
+  .peptide-table th:nth-child(3) { text-align:left; }
+  .peptide-table td { padding:5px 4px; border-bottom:1px solid #f5f0f8; vertical-align:middle; text-align:center; font-size:11px; color:inherit; }
+  .peptide-table td:nth-child(1),
+  .peptide-table td:nth-child(2),
+  .peptide-table td:nth-child(3) { text-align:left; }
   .peptide-table tr:last-child td { border-bottom:none; }
   .peptide-table tr:hover td { background:#faf6fc; }
-  .rank-badge { width:18px; height:18px; border-radius:50%; background:var(--primary-light); color:var(--primary); font-size:9px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
-  .peptide-id { color:var(--text-muted); font-size:10px; }
-  .gene-name { font-weight:700; color:var(--text); font-size:11px; }
-  .fc-up   { color:var(--danger); font-weight:700; font-size:11px; text-align:right; }
-  .fc-down { color:#1A6EA8; font-weight:700; font-size:11px; text-align:right; }
+  .rank-badge { width:16px; height:16px; border-radius:50%; background:var(--primary-light); color:var(--primary); font-size:8px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .peptide-id { color:var(--text-muted); font-size:9px; }
+  .gene-name { font-weight:700; color:var(--text); font-size:10px; }
+  .num-val { font-size:9px; color:var(--text); }
+  .your-result { font-weight:700; font-size:9px; color:var(--text); }
+  .range-up   { color:var(--danger) !important; font-weight:700; font-size:9px; }
+  .range-down { color:#1A6EA8 !important;       font-weight:700; font-size:9px; }
+  .range-norm { color:#9E9E9E !important;  font-weight:700;      font-size:9px; }
   .heatmap-row { padding:6px 8px 10px; display:flex; align-items:center; gap:8px; }
   .heatmap-label { font-size:9px; color:var(--text-muted); width:56px; text-align:center; font-weight:500; line-height:1.3; }
   .heatmap-bar { flex:1; height:8px; border-radius:4px; background:linear-gradient(90deg,#3B82F6 0%,#9333EA 30%,white 50%,#f87171 70%,#C23B5A 100%); }
@@ -140,7 +148,7 @@
 <nav class="top-nav">
   <a class="top-nav-brand" href="#"><div class="brand-icon">🫀</div><div><span class="brand-name">AccurateCVD-AI</span><span class="brand-tag">Interactive Demo</span></div></a>
   <div class="top-nav-actions">
-    <a href="index.html" class="nav-pill active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>Mobile App</a>
+    <a href="mobile_home.html" class="nav-pill active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>Mobile App</a>
     <a href="web_dashboard.html" class="nav-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Web Portal</a>
   </div>
 </nav>
@@ -152,7 +160,7 @@
 
       <div class="app-content">
         <div class="page-header">
-          <a href="index.html" class="back-btn"><svg width="16" height="16" fill="none" stroke="var(--text)" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
+          <a href="mobile_home.html" class="back-btn"><svg width="16" height="16" fill="none" stroke="var(--text)" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
           <span class="page-title">Your Results</span>
           <span class="page-date">Jan 20, 2026</span>
         </div>
@@ -218,7 +226,7 @@
             </div>
             <div class="dist-legend">
               <div class="legend-item"><div class="legend-dot dot-healthy"></div> Healthy</div>
-              <div class="legend-item"><div class="legend-dot dot-cvd"></div> CAD</div>
+              <div class="legend-item"><div class="legend-dot dot-cvd"></div> CVD</div>
               <div class="legend-item"><div class="legend-dot dot-score"></div> Your Score</div>
             </div>
           </div>
@@ -229,23 +237,87 @@
             <table class="peptide-table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Peptide ID</th>
-                  <th>Protein</th>
-                  <th>FC</th>
+                <th>#</th>
+                <th>Protein</th>
+                <th>Median</th>
+                <th>2.5%</th>
+                <th>97.5%</th>
+                <th>Your result</th>
+                <th>Range</th>
                 </tr>
               </thead>
               <tbody>
-                <tr><td><span class="rank-badge">1</span></td><td><span class="peptide-id">e12955</span></td><td><span class="gene-name">COL1A1</span></td><td class="fc-up">+3.2</td></tr>
-                <tr><td><span class="rank-badge">2</span></td><td><span class="peptide-id">e09821</span></td><td><span class="gene-name">COL3A1</span></td><td class="fc-up">+2.8</td></tr>
-                <tr><td><span class="rank-badge">3</span></td><td><span class="peptide-id">e04417</span></td><td><span class="gene-name">FGA</span></td><td class="fc-up">+2.1</td></tr>
-                <tr><td><span class="rank-badge">4</span></td><td><span class="peptide-id">e07283</span></td><td><span class="gene-name">COL1A1</span></td><td class="fc-up">+1.9</td></tr>
-                <tr><td><span class="rank-badge">5</span></td><td><span class="peptide-id">e11094</span></td><td><span class="gene-name">MMP7</span></td><td class="fc-up">+1.7</td></tr>
-                <tr><td><span class="rank-badge">6</span></td><td><span class="peptide-id">e03556</span></td><td><span class="gene-name">UMOD</span></td><td class="fc-down">–2.4</td></tr>
-                <tr><td><span class="rank-badge">7</span></td><td><span class="peptide-id">e08102</span></td><td><span class="gene-name">COL4A5</span></td><td class="fc-down">–1.6</td></tr>
-                <tr><td><span class="rank-badge">8</span></td><td><span class="peptide-id">e15330</span></td><td><span class="gene-name">CD99</span></td><td class="fc-down">–1.4</td></tr>
-                <tr><td><span class="rank-badge">9</span></td><td><span class="peptide-id">e06841</span></td><td><span class="gene-name">SERPINA1</span></td><td class="fc-up">+1.3</td></tr>
-                <tr><td><span class="rank-badge">10</span></td><td><span class="peptide-id">e02178</span></td><td><span class="gene-name">TTR</span></td><td class="fc-down">–1.1</td></tr>
+              
+                <tr>
+                  <td><span class="rank-badge">1</span></td>
+                  <td><span class="gene-name">COL1A1</span></td>
+                  <td class="num-val">2.1</td><td class="num-val">0.8</td><td class="num-val">3.0</td>
+                  <td class="your-result">3.2</td>
+                  <td class="range-up">Up</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">2</span></td>
+                  <td><span class="gene-name">COL3A1</span></td>
+                  <td class="num-val">1.8</td><td class="num-val">0.6</td><td class="num-val">2.5</td>
+                  <td class="your-result">2.8</td>
+                  <td class="range-up">Up</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">3</span></td>
+                  <td><span class="gene-name">FGA</span></td>
+                  <td class="num-val">1.4</td><td class="num-val">0.5</td><td class="num-val">2.0</td>
+                  <td class="your-result">2.1</td>
+                  <td class="range-up">Up</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">4</span></td>
+                  <td><span class="gene-name">COL1A1</span></td>
+                  <td class="num-val">1.2</td><td class="num-val">0.4</td><td class="num-val">1.8</td>
+                  <td class="your-result">1.9</td>
+                  <td class="range-up">Up</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">5</span></td>
+                  <td><span class="gene-name">MMP7</span></td>
+                  <td class="num-val">1.1</td><td class="num-val">0.3</td><td class="num-val">1.6</td>
+                  <td class="your-result">1.7</td>
+                  <td class="range-up">Up</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">6</span></td>
+                  <td><span class="gene-name">UMOD</span></td>
+                  <td class="num-val">−1.5</td><td class="num-val">−2.2</td><td class="num-val">−0.8</td>
+                  <td class="your-result">−2.4</td>
+                  <td class="range-down">Down</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">7</span></td>
+                  <td><span class="gene-name">COL4A5</span></td>
+                  <td class="num-val">−0.9</td><td class="num-val">−1.5</td><td class="num-val">−0.3</td>
+                  <td class="your-result">−1.2</td>
+                  <td class="range-norm">Within</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">8</span></td>
+                  <td><span class="gene-name">CD99</span></td>
+                  <td class="num-val">−0.7</td><td class="num-val">−1.3</td><td class="num-val">−0.2</td>
+                  <td class="your-result">−1.4</td>
+                  <td class="range-down">Down</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">9</span></td>
+                  <td><span class="gene-name">SERPINA1</span></td>
+                  <td class="num-val">0.9</td><td class="num-val">0.3</td><td class="num-val">1.5</td>
+                  <td class="your-result">1.3</td>
+                  <td class="range-norm">Within</td>
+                </tr>
+                <tr>
+                  <td><span class="rank-badge">10</span></td>
+                  <td><span class="gene-name">TTR</span></td>
+                  <td class="num-val">−0.6</td><td class="num-val">−1.1</td><td class="num-val">−0.1</td>
+                  <td class="your-result">−1.1</td>
+                  <td class="range-down">Down</td>
+                </tr>
               </tbody>
             </table>
             <!-- Heatmap legend -->
@@ -359,7 +431,7 @@
       </div><!-- app-content -->
 
       <div class="bottom-nav">
-        <a href="index.html" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div><span class="nav-tab-label">Home</span></a>
+        <a href="mobile_home.html" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div><span class="nav-tab-label">Home</span></a>
         <a href="mobile_status.html" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="nav-tab-label">Status</span></a>
         <a href="mobile_results.html" class="nav-tab active"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="nav-tab-label">Results</span></a>
         <a href="#" class="nav-tab"><div class="nav-tab-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-tab-label">Profile</span></a>
@@ -453,7 +525,7 @@ function gaussian(x, mu, sigma) {
           pointRadius: 0,
         },
         {
-          label: 'CAD',
+          label: 'CVD',
           data: cvdData,
           borderColor: '#C23B5A',
           backgroundColor: 'rgba(194,59,90,0.10)',
